@@ -44,6 +44,10 @@ header.site{position:sticky;top:0;z-index:50;background:rgba(251,248,240,.94);ba
 .tabs button{border:0;background:transparent;color:var(--soft);padding:6px 15px;border-radius:18px;font-size:13px;transition:.18s;white-space:nowrap;}
 .tabs button.on{background:var(--card);color:var(--accent);font-weight:600;box-shadow:var(--shadow);}
 .icon-btn{border:1px solid var(--line);background:var(--card);border-radius:18px;padding:5px 12px;font-size:12px;color:var(--soft);}
+/* 多选筛选工具条（两版共用） */
+.pick-tools{display:flex;gap:8px;flex-wrap:wrap;padding:12px 20px 0;}
+.pick-tools input{flex:1;min-width:140px;border:1px solid var(--line);border-radius:10px;padding:8px 10px;background:var(--card);}
+.pick-tools select{border:1px solid var(--line);border-radius:10px;padding:8px;background:var(--card);font-size:12px;}
 .progress-wrap{max-width:1080px;margin:0 auto;padding:0 18px 9px;}
 .prog-top{display:flex;align-items:center;gap:10px;font-size:11.5px;color:var(--soft);margin-bottom:5px;}
 .prog-top .n{color:var(--accent);font-weight:700;font-size:13px;}
@@ -197,26 +201,64 @@ header.site{position:sticky;top:0;z-index:50;background:rgba(251,248,240,.94);ba
   .nav-right .icon-btn{padding:5px 9px;font-size:11px;}
 }
 </style>
+<style>
+/* ===== 空白版专属：使用说明 / 时间与旅行动画 / BGM ===== */
+.guide-box{background:var(--paper2);border:1px dashed var(--line);border-radius:14px;padding:16px 18px;text-align:left;margin-top:16px;}
+.guide-h{font-family:Georgia,"Songti SC",serif;font-size:15px;color:var(--accent);margin-bottom:10px;}
+.guide-ol{margin:0;padding-left:20px;color:var(--soft);font-size:12.5px;line-height:1.75;}
+.guide-ol li{margin:7px 0;}
+.guide-ol b{color:var(--ink);}
+
+/* 背景旅行轨迹动画层 */
+#journeyScene{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
+.trail{position:absolute;bottom:-40px;width:2px;height:2px;opacity:.5;}
+.trail::before{content:'';position:absolute;left:-1px;top:-6px;width:4px;height:4px;border-radius:50%;background:var(--accent2);box-shadow:0 0 8px var(--accent2);}
+@keyframes floatUp{0%{transform:translateY(0) rotate(0deg);opacity:0;}10%{opacity:.55;}90%{opacity:.35;}100%{transform:translateY(-105vh) rotate(360deg);opacity:0;}}
+#sceneClock{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font-family:Georgia,serif;font-size:min(36vw,320px);color:rgba(178,106,88,.035);z-index:0;pointer-events:none;white-space:nowrap;}
+@keyframes clockTick{from{transform:translate(-50%,-50%) rotate(0);}to{transform:translate(-50%,-50%) rotate(360deg);}}
+
+/* BGM 面板 */
+#bgmPanel{position:fixed;right:16px;top:120px;z-index:80;width:min(300px,calc(100vw - 32px));background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:0 8px 32px rgba(94,72,44,.16);padding:16px;display:none;}
+#bgmPanel.on{display:block;animation:popIn .2s ease;}
+@keyframes popIn{from{opacity:0;transform:translateY(-8px);}to{opacity:1;transform:translateY(0);}}
+.bgm-h{font-family:Georgia,"Songti SC",serif;font-size:15px;margin-bottom:4px;}
+.bgm-sub{font-size:11px;color:var(--soft);margin-bottom:12px;}
+.bgm-row{display:flex;align-items:center;gap:8px;margin:10px 0;}
+.bgm-row label{font-size:12px;color:var(--soft);flex:0 0 42px;}
+.bgm-row input[type=range]{flex:1;accent-color:var(--accent);}
+.bgm-btns{display:flex;gap:8px;margin-top:12px;}
+.bgm-btns button{flex:1;}
+.bgm-now{font-size:11.5px;color:var(--accent);margin-top:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+</style>
 </head>
 <body>
 
-<!-- ========== 首次引导（仅空白版使用；预设版自动灌入） ========== -->
+<!-- ========== 首次引导 ========== -->
 <div id="onboardView" class="center-screen" style="display:none;">
-  <div class="auth-card" style="max-width:460px;">
-    <div class="logo serif" style="font-size:22px;">欢迎来到你的五年之旅</div>
-    <div class="tagline">先为手账准备起点，之后随时可以增删改</div>
-    <button class="onboard-opt rec" onclick="onboard('sample')">
-      <b>载入 30 条示例预设</b>
-      <span>一键填入这套完整的五年计划模板作为起点，再慢慢改成自己的。</span>
-    </button>
-    <button class="onboard-opt" onclick="onboard('blank')">
-      <b>从空白开始，自己设定</b>
-      <span>先建一条属于自己的卡片，完全按你的节奏来。</span>
+  <div class="auth-card" style="max-width:560px;">
+    <div class="logo serif" style="font-size:23px;">欢迎来到你的五年之旅</div>
+    <div class="tagline">这是一本属于你的空白手账，从第一张卡片开始</div>
+
+    <div class="guide-box">
+      <div class="guide-h">✦ 怎么用这本手账（约 1 分钟看完）</div>
+      <ol class="guide-ol">
+        <li><b>先定方向</b>：点「开始设定」，新建你的第一张卡片——给它分级（红/黄/绿）、选一个大方向、写下「今天想做什么」和「做到什么程度算满意」。</li>
+        <li><b>每天挑几件</b>：在「今日打卡」点「从卡片库多选」，可按分级和大方向快速筛选定位，勾选想做的加入今天。</li>
+        <li><b>做到就盖戳</b>：点今天的卡片，勾选完成，它会变成透明粉并盖上日期印章；还能写心情、思考、寄语，加照片。</li>
+        <li><b>回头看旅途</b>：「人生旅途」页有心情 Top3、关键词云、写给自己的话，以及日/周/月/季/年回顾——不为批判，只看你走到了哪里。</li>
+        <li><b>记得备份</b>：所有数据只存在你这台设备的浏览器里。定期点右上「存档 → 导出备份」保存 JSON，换设备时导入即可。</li>
+      </ol>
+    </div>
+
+    <button class="onboard-opt rec" onclick="onboard('blank')" style="margin-top:18px;">
+      <b>开始设定我的第一张卡片 →</b>
+      <span>现在就从空白开始，完全按你自己的节奏来。</span>
     </button>
     <div class="err" id="onboardErr"></div>
-    <div class="notice">这是纯本地版本：所有数据只保存在本机浏览器里，不联网、不需要账号。请定期用「存档」导出备份。</div>
+    <div class="notice">纯本地版本：数据只保存在本机浏览器，不联网、不需要账号。</div>
   </div>
 </div>
+
 
 <!-- ========== 主应用 ========== -->
 <div id="appView" style="display:none;">
@@ -224,7 +266,9 @@ header.site{position:sticky;top:0;z-index:50;background:rgba(251,248,240,.94);ba
     <div class="nav-inner">
       <div class="brand"><b>A Five-Year Journey</b><span>五年自由之旅</span><span class="local-badge">本地版</span></div>
       <div class="nav-right">
-        <button class="icon-btn" onclick="openData()">存档</button>
+                <button class="icon-btn" onclick="openGuide()">? 使用说明</button>
+        <button class="icon-btn" id="bgmBtn" onclick="toggleBgmPanel()">♪ 音乐</button>
+                <button class="icon-btn" onclick="openData()">存档</button>
       </div>
     </div>
     <div class="progress-wrap">
@@ -314,7 +358,7 @@ header.site{position:sticky;top:0;z-index:50;background:rgba(251,248,240,.94);ba
         <div class="fld"><label>分级</label><select id="cf-level"></select></div>
         <div class="fld"><label>大方向</label><select id="cf-dir"></select></div>
       </div>
-      <div class="fld"><label>待体验（具体行动）</label><input type="text" id="cf-action" placeholder="例如：今天好好护肤了吗"></div>
+      <div class="fld"><label>待体验（具体行动）</label><input type="text" id="cf-action" placeholder="例如：今天读几页书、走一段路"></div>
       <div class="fld"><label>做到满意的程度</label><textarea id="cf-standard" placeholder="做到什么地步、什么程度能让我满意"></textarea></div>
     </div>
     <div class="box-f">
@@ -351,6 +395,11 @@ header.site{position:sticky;top:0;z-index:50;background:rgba(251,248,240,.94);ba
 <div class="mask" id="pickModal">
   <div class="box wide">
     <div class="box-h"><div><h2 class="serif">加入今天</h2><div class="meta">勾选想做的卡片，可多选</div></div><button class="x" onclick="closeMask('pickModal')">×</button></div>
+    <div class="pick-tools">
+      <input type="text" id="pickSearch" placeholder="搜索卡片…" oninput="renderPickList()">
+      <select id="pickLevel" onchange="renderPickList()"><option value="">全部分级</option><option value="红灯">红灯</option><option value="黄灯">黄灯</option><option value="绿灯">绿灯</option></select>
+      <select id="pickDir" onchange="renderPickList()"><option value="">全部大方向</option></select>
+    </div>
     <div class="box-b"><div class="pick-list" id="pickList"></div></div>
     <div class="box-f">
       <button class="btn ghost" onclick="closeMask('pickModal')">取消</button>
@@ -386,11 +435,49 @@ header.site{position:sticky;top:0;z-index:50;background:rgba(251,248,240,.94);ba
   </div>
 </div>
 
+<!-- 时间与旅行元素：背景动画层 -->
+<div id="journeyScene" aria-hidden="true"></div>
+<div id="sceneClock" class="serif" aria-hidden="true">◷</div>
+
+<!-- 自定义 BGM 面板 -->
+<div id="bgmPanel">
+  <div class="bgm-h">♪ 旅途背景音乐</div>
+  <div class="bgm-sub">选一首本地音乐，陪你走过五年</div>
+  <div class="bgm-btns">
+    <button class="btn ghost sm" onclick="$('bgmFile').click()">选择本地音乐</button>
+    <button class="btn sm" id="bgmPlay" onclick="togglePlay()">播放</button>
+  </div>
+  <input type="file" id="bgmFile" accept="audio/*" style="display:none" onchange="loadBgm(this)">
+  <div class="bgm-row"><label>音量</label><input type="range" id="bgmVol" min="0" max="1" step="0.05" value="0.5" oninput="setBgmVol(this.value)"></div>
+  <div class="bgm-now" id="bgmNow">尚未选择音乐</div>
+  <div class="bgm-sub" style="margin:10px 0 0;">音乐只保存在这台设备，不会上传。</div>
+</div>
+
+<!-- 使用说明弹窗 -->
+<div class="mask" id="guideModal">
+  <div class="box">
+    <div class="box-h"><div><h2 class="serif">使用说明</h2><div class="meta">五年自由之旅 · 空白版</div></div><button class="x" onclick="closeMask('guideModal')">×</button></div>
+    <div class="box-b">
+      <div class="guide-box" style="margin:0;">
+        <ol class="guide-ol">
+          <li><b>建立卡片</b>：在「卡片库」点「新建卡片」，设定分级（红=日常必做/黄=进阶目标/绿=长期探索）、大方向、待体验的具体行动，以及做到什么程度算满意。</li>
+          <li><b>每日打卡</b>：在「今日打卡」点「从卡片库多选」，可按分级/大方向/关键词快速筛选，勾选想做的加入今天。做到的点开卡片勾选完成——卡片变透明粉并盖上日期印章。</li>
+          <li><b>记录心情</b>：勾选时可选择今天的心情、写下思考和给自己的寄语，还能添加照片（会自动压缩后存在本机）。</li>
+          <li><b>查看旅途</b>：「人生旅途」页展示心情 Top3、关键词云、写给现在的自己，以及日/周/月/季/年回顾。</li>
+          <li><b>背景音乐</b>：点顶部「♪ 音乐」选择一首本地音频作为旅途 BGM，可播放/暂停、调音量，音乐只存本机。</li>
+          <li><b>数据备份</b>：点「存档 → 导出备份」保存 JSON 文件。清理浏览器数据会清空记录，请定期备份；换设备时用「导入备份」恢复。</li>
+        </ol>
+      </div>
+    </div>
+    <div class="box-f"><button class="btn" onclick="closeMask('guideModal')">明白了</button></div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
 /* =========================================================
- * 构建模式（由构建脚本注入）：preset = 自带30条预设；blank = 空白引导
+ * 构建模式（由构建脚本注入）：preset = 自用版；blank = 公开空白版
  * ========================================================= */
 var BUILD_MODE = "blank";
 var STORE_KEY = "fiveYearJourney_blank_v1";
@@ -423,38 +510,7 @@ var Adapter = {
 var DEFAULT_LEVELS = ["红灯","黄灯","绿灯"];
 var DEFAULT_DIRS = ["健康外形","饮食健康","学识增长","拓展语言工具","关于热爱","现生工作","感受世界","经济管理"];
 var DEFAULT_MOODS = ["开心","平静","充实","疲惫","焦虑","低落","感动","一般"];
-var SAMPLE = [
- ["红灯","健康外形","你今天好好护肤了吗","能先坚持一个月再养成习惯就好啦"],
- ["红灯","饮食健康","补剂有记得吃吗","体检报告良好不要营养不良了"],
- ["红灯","饮食健康","今天的3大杯喝够了吗","每天坚持喝2L以上的水"],
- ["红灯","健康外形","好好遵循番茄钟休息间隔","不要得病不要过劳"],
- ["黄灯","健康外形","今天向高壮帅哥努力靠拢了吗","能习惯运动，达到心仪的体态、体脂率与肌肉量，扩展更多的圈子如攀岩、冲浪、骑射等，三大项60、60、75"],
- ["黄灯","现生工作","学习每日推送，发掘制定更多合适的学习内容，总结可复用的项目经验","半年内熟练掌握电子料全品类采购，进入AI具身相关行业公司，工资翻倍"],
- ["绿灯","学识增长","看书（人类学、社会学、经济学、心理学）","每个月至少都有接触3-5次"],
- ["绿灯","学识增长","看纪录片（双语、对工作或热爱等有帮助的内容）","每个月至少都有接触3-5次"],
- ["红灯","饮食健康","今天控制住嘴巴了吗","低成本高完成度遵循健康食谱"],
- ["红灯","经济管理","不是不花是要缓慢花、有秩序花、因地制宜花、有理有据花","养成记账的习惯，买东西前三思，红色项一年只产生3次且金额总共在900元以下，黄色项一年只产生12次且金额总共在2400以下，黑色项控制年总金额在5000以下。"],
- ["绿灯","学识增长","光收藏不学是假把式，今天又发现哪些小知识呢","把B站与xhs上收藏的博主有用内容都学一遍"],
- ["黄灯","拓展语言工具","可以练习英音、可以去看TED、可以学习词组造句","英语能日常无压力交流以及最好雅思、托福、GRE、bec高分过"],
- ["黄灯","拓展语言工具","可以继续看月曜日、可以看点纪录片、可以找ai制定商务场景训练","日语保持日常交流的水平以及商务用法"],
- ["绿灯","拓展语言工具","先熟记发音与规则，单独拆解2-3句歌词理解并记忆","法语能唱红与黑所有歌曲"],
- ["绿灯","拓展语言工具","你是否为keegan拼过命","西语能掌握发音与简单日常用语"],
- ["绿灯","拓展语言工具","藏语、闽语、蒙语、德语、俄语、韩语、维语、泰语、印地语、意大利语吴语任君选择","掌握其他语言的发音使得可以自如唱歌，有余力可以进一步掌握日常沟通交流"],
- ["绿灯","关于热爱","hi hi hi 好厨子今天伯了吗？","掌握透视、速写、人体、光影、色彩、厚涂"],
- ["绿灯","关于热爱","建模是时候更进一步了！想法的实现从单独建档开始吧","把无料list上的想法通通实现"],
- ["绿灯","关于热爱","今天是勤劳小裁缝？还是五毒圣体毛娘？还是无所不能道具师？","把cos list上的角色出完，尽量提高自制含量"],
- ["绿灯","关于热爱","今天也是一位逍遥小道士呢","全面了解道教文化与知识，掌握基础六爻、八卦、八字、梅花易数、四柱命理、紫微斗数、奇门遁甲、风水、符箓画法"],
- ["绿灯","感受世界","出去走走、见见朋友或者找陌生人说说话","保持跟世界的联结"],
- ["绿灯","关于热爱","开启疯狂汲取布灯、电影构图、情绪调色的知识，可以用bjd实践","掌握灯光布置、光影运用、分镜、构图、调色、摄影，拍出满意的cos照，能作为副业更好了"],
- ["绿灯","关于热爱","你也想高p能见人吧，kuku整","掌握ps、lr技术，能够大合成图片"],
- ["黄灯","学识增长","来吧学习，掌握大蟒蛇！","掌握python，起码能看懂ai给的代码并且能识别错误"],
- ["黄灯","学识增长","只要学不死就往死里学！","了解PCB，能够支撑无料制作即可"],
- ["绿灯","关于热爱","live2D、写小说、各种考证、注音、摩斯密码、收纳知识、设计房子布局、设计新爬箱与新鸡笼","探索更多人生支线"],
- ["绿灯","学识增长","今天思考什么限定主题呢？","输入同时能每周都保持输出"],
- ["绿灯","关于热爱","今天尝试什么画法呢？","能缩短cos妆的时间为2h内但质量需要提升并掌握不同画法的技巧，游刃有余出不同角色；缩短日常妆的时间为1h但要学会匹配不同穿搭有不同妆容"],
- ["绿灯","关于热爱","今天开始动作拆解！","能唱跳双子的Roki；与11出呆人时能唱跳；可以的话唱跳韩舞"],
- ["绿灯","关于热爱","管理你的面部表情！别的学累了吧，来畅快手语","掌握日常手语出尼古拉斯时能不ooc"]
-];
+
 
 /* ============ 状态 ============ */
 var STATE=null;                 // {options:{level,direction,mood}, cards:[], logs:[], nextId:1, createdAt}
@@ -477,23 +533,16 @@ function persist(){
 }
 
 /* ============ 新建状态 & 启动 ============ */
-function freshState(withSample){
+function freshState(withPreset){
   var st={options:{level:DEFAULT_LEVELS.slice(),direction:DEFAULT_DIRS.slice(),mood:DEFAULT_MOODS.slice()},cards:[],logs:[],nextId:1,createdAt:new Date().toISOString(),mode:BUILD_MODE};
-  if(withSample){
-    SAMPLE.forEach(function(x,i){
-      st.cards.push({id:st.nextId++,card_no:i+1,level:x[0],direction:x[1],action:x[2],standard:x[3],archived:false,created_at:new Date().toISOString()});
-    });
-  }
+  
   return st;
 }
+
 function boot(){
   var st=Adapter.read();
   if(st && st.options && st.cards && st.logs){
-    STATE=st;
-    enterApp();
-  }else if(BUILD_MODE==='preset'){
-    STATE=freshState(true);persist();enterApp();
-    setTimeout(function(){toast('已载入 30 条预设，开始你的五年之旅吧');},300);
+    STATE=st;enterApp();startAmbient();
   }else{
     $('onboardView').style.display='flex';
   }
@@ -501,11 +550,11 @@ function boot(){
 function onboard(mode){
   $('onboardErr').textContent='';
   try{
-    STATE=freshState(mode==='sample');
+    STATE=freshState(false);
     if(!persist()){$('onboardErr').textContent='保存失败，请检查浏览器存储设置';return;}
     enterApp();
-    toast(mode==='sample'?'已载入 30 条示例预设':'从空白开始，去建第一条卡片吧');
-    if(mode==='blank')setTimeout(function(){openCardEditor(null);},200);
+    startAmbient();
+    setTimeout(function(){openCardEditor(null);},250);
   }catch(e){$('onboardErr').textContent=(e&&e.message)||'初始化失败，请重试';}
 }
 function enterApp(){
@@ -608,16 +657,41 @@ function quickDone(id){
   if(nv)toast('完成啦，珍藏 +1');
 }
 
-/* ============ 多选 ============ */
+/* ============ 多选（支持按分级/大方向/关键词快速定位） ============ */
 function openPick(){
   if(!CARDS.length){toast('卡片库还是空的，先新建一张卡片吧');openCardEditor(null);return;}
   PICK_SET={};
+  // 初始化大方向筛选下拉（复用已存在的选项）
+  var sel=$('pickDir');
+  if(sel && sel.options.length<=1){
+    DIRS.slice().sort(function(a,b){return a.localeCompare(b,'zh');}).forEach(function(d){
+      var o=document.createElement('option');o.value=d;o.textContent=d;sel.appendChild(o);
+    });
+  }
+  if($('pickSearch'))$('pickSearch').value='';
+  if($('pickLevel'))$('pickLevel').value='';
+  if($('pickDir'))$('pickDir').value='';
+  renderPickList();
+  $('pickModal').classList.add('on');
+}
+function renderPickList(){
+  var kw=(($('pickSearch')&&$('pickSearch').value)||'').trim().toLowerCase();
+  var lvl=($('pickLevel')&&$('pickLevel').value)||'';
+  var dir=($('pickDir')&&$('pickDir').value)||'';
+  var list=CARDS.filter(function(c){
+    if(lvl&&c.level!==lvl)return false;
+    if(dir&&c.direction!==dir)return false;
+    if(kw&&((c.action+' '+(c.standard||'')).toLowerCase().indexOf(kw)<0))return false;
+    return true;
+  });
+  if(!list.length){$('pickList').innerHTML='<div class="empty">没有符合条件的卡片，换个筛选条件试试。</div>';return;}
   var h='';
-  CARDS.forEach(function(c){
-    h+='<label class="pick-item"><input type="checkbox" data-id="'+c.id+'" onchange="PICK_SET['+c.id+']=this.checked">'
+  list.forEach(function(c){
+    var checked=PICK_SET[c.id]?' checked':'';
+    h+='<label class="pick-item"><input type="checkbox" data-id="'+c.id+'"'+checked+' onchange="PICK_SET['+c.id+']=this.checked">'
       +'<span class="pl-t"><b>'+esc(c.action)+'</b><span>'+esc(c.direction)+' · '+esc(c.level)+'</span></span></label>';
   });
-  $('pickList').innerHTML=h;$('pickModal').classList.add('on');
+  $('pickList').innerHTML=h;
 }
 function confirmPick(){
   var ids=Object.keys(PICK_SET).filter(function(k){return PICK_SET[k];}).map(Number);
@@ -841,6 +915,81 @@ function resetAll(){
 /* ============ 全局渲染 ============ */
 function renderAll(){renderProgress();renderToday();renderCards();renderStats();}
 
+/* ============ 空白版专属：使用说明 / BGM / 时间旅行动画 ============ */
+function openGuide(){ $('guideModal').classList.add('on'); }
+
+/* --- 时间与旅行元素动画：漂浮的光点轨迹 + 缓慢转动的时钟水印 --- */
+function startAmbient(){
+  if($('journeyScene').childNodes.length)return;
+  var scene=$('journeyScene');
+  for(var i=0;i<14;i++){
+    var s=document.createElement('div');
+    s.className='trail';
+    s.style.left=(Math.random()*100)+'%';
+    s.style.animation='floatUp '+(14+Math.random()*12)+'s linear infinite';
+    s.style.animationDelay=(-Math.random()*20)+'s';
+    scene.appendChild(s);
+  }
+  var clock=$('sceneClock');
+  clock.style.animation='clockTick 120s linear infinite';
+  // 时钟水印随实际时间显示当前时辰
+  var h=new Date().getHours();
+  clock.textContent=(h<6?'☾':h<12?'☀':h<18?'◐':'☽');
+}
+/* --- BGM：本地音频，IndexedDB 持久化，不上传 --- */
+var BGM_DB=null, BGM_AUDIO=null, BGM_OBJURL=null;
+function bgmDB(){
+  if(BGM_DB)return Promise.resolve(BGM_DB);
+  return new Promise(function(res,rej){
+    var r=indexedDB.open('journey_bgm',1);
+    r.onupgradeneeded=function(){r.result.createObjectStore('audio');};
+    r.onsuccess=function(){BGM_DB=r.result;res(BGM_DB);};
+    r.onerror=function(){rej(r.error);};
+  });
+}
+function bgmSave(blob){
+  return bgmDB().then(function(db){
+    return new Promise(function(res,rej){
+      var tx=db.transaction('audio','readwrite');
+      tx.objectStore('audio').put(blob,'bgm');
+      tx.oncomplete=function(){res(true);};tx.onerror=function(){rej(tx.error);};
+    });
+  });
+}
+function bgmLoad(){
+  return bgmDB().then(function(db){
+    return new Promise(function(res,rej){
+      var tx=db.transaction('audio','readonly');
+      var rq=tx.objectStore('audio').get('bgm');
+      rq.onsuccess=function(){res(rq.result||null);};rq.onerror=function(){rej(rq.error);};
+    });
+  }).catch(function(){return null;});
+}
+function applyBgmBlob(blob,name){
+  if(BGM_OBJURL)URL.revokeObjectURL(BGM_OBJURL);
+  BGM_OBJURL=URL.createObjectURL(blob);
+  if(!BGM_AUDIO){BGM_AUDIO=new Audio();BGM_AUDIO.loop=true;}
+  BGM_AUDIO.src=BGM_OBJURL;
+  BGM_AUDIO.volume=parseFloat(($('bgmVol')&&$('bgmVol').value)||0.5);
+  if($('bgmNow'))$('bgmNow').textContent='♪ '+(name||'旅途背景音乐');
+  if($('bgmPlay'))$('bgmPlay').textContent='播放';
+}
+function loadBgm(input){
+  var f=input.files&&input.files[0];if(!f)return;
+  bgmSave(f).then(function(){applyBgmBlob(f,f.name);toast('背景音乐已保存到本机');})
+    .catch(function(){toast('音乐保存失败');});
+  input.value='';
+}
+function togglePlay(){
+  if(!BGM_AUDIO){toast('请先选择一首本地音乐');return;}
+  if(BGM_AUDIO.paused){BGM_AUDIO.play().then(function(){$('bgmPlay').textContent='暂停';}).catch(function(){toast('播放失败，请重试');});}
+  else{BGM_AUDIO.pause();$('bgmPlay').textContent='播放';}
+}
+function setBgmVol(v){if(BGM_AUDIO)BGM_AUDIO.volume=parseFloat(v);}
+function toggleBgmPanel(){$('bgmPanel').classList.toggle('on');}
+// 启动后恢复上次选择的音乐
+bgmLoad().then(function(b){if(b)applyBgmBlob(b,'上次选择的音乐');});
+
 /* =========================================================
  * 云端迁移预留接口（当前不启用，保留以便将来改造）：
  * var CloudAdapter = {
@@ -857,9 +1006,7 @@ function renderAll(){renderProgress();renderToday();renderCards();renderStats();
 
 /* ===== PWA: 离线缓存（仅 http/https 下注册，file:// 静默跳过） ===== */
 if('serviceWorker' in navigator && (location.protocol==='https:'||location.protocol==='http:')){
-  window.addEventListener('load',function(){
-    navigator.serviceWorker.register('./sw.js').catch(function(){});
-  });
+  window.addEventListener('load',function(){ navigator.serviceWorker.register('./sw.js').catch(function(){}); });
 }
 
 boot();
