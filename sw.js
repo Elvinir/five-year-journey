@@ -1,5 +1,5 @@
 /* A Five-Year Journey · 离线缓存 Service Worker */
-var CACHE = 'five-year-journey-v1';
+var CACHE = 'five-year-journey-v2';
 var ASSETS = [
   './', './index.html', './preset.html', './blank.html',
   './manifest-preset.webmanifest', './manifest-blank.webmanifest',
