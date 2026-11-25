@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="theme-color" content="#FBF8F0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="五年之旅 · 空白版">
+<link rel="manifest" href="manifest-blank.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>A Five-Year Journey · 五年自由之旅（本地版）</title>
+<style>
+:root{
+  --paper:#FBF8F0;--paper2:#F5EFE2;--card:#FFFDF8;
+  --ink:#3B352D;--soft:#7C7366;--faint:#A79C8B;
+  --accent:#B26A58;--accent2:#D98E76;--accentsoft:#F6E6DE;
+  --line:#E7DECC;--line2:#D8CDB6;
+  --red:#C2604D;--yellow:#C19943;--green:#6E9A76;
+  --shadow:0 2px 14px rgba(94,72,44,.07);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{margin:0;padding:0;}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  background:var(--paper);color:var(--ink);font-size:14px;line-height:1.6;
+  background-image:radial-gradient(rgba(150,130,95,.05) 1px,transparent 1px);background-size:22px 22px;
+  padding-bottom:env(safe-area-inset-bottom);
+}
+.serif{font-family:Georgia,"Songti SC","SimSun",serif;}
+button,input,select,textarea{font-family:inherit;font-size:inherit;color:inherit;}
+button{cursor:pointer;}
+.wrap{max-width:1080px;margin:0 auto;padding:0 18px 80px;}
+a{color:var(--accent);}
+header.site{position:sticky;top:0;z-index:50;background:rgba(251,248,240,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);}
+.nav-inner{max-width:1080px;margin:0 auto;padding:11px 18px 8px;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.brand b{font-family:Georgia,serif;font-size:17px;letter-spacing:.3px;}
+.brand span{color:var(--soft);font-size:12px;margin-left:6px;}
+.nav-right{display:flex;align-items:center;gap:8px;}
+.user-chip{font-size:12px;color:var(--soft);max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.tabs{display:flex;gap:4px;background:var(--paper2);padding:3px;border-radius:22px;}
+.tabs button{border:0;background:transparent;color:var(--soft);padding:6px 15px;border-radius:18px;font-size:13px;transition:.18s;white-space:nowrap;}
+.tabs button.on{background:var(--card);color:var(--accent);font-weight:600;box-shadow:var(--shadow);}
+.icon-btn{border:1px solid var(--line);background:var(--card);border-radius:18px;padding:5px 12px;font-size:12px;color:var(--soft);}
+.progress-wrap{max-width:1080px;margin:0 auto;padding:0 18px 9px;}
+.prog-top{display:flex;align-items:center;gap:10px;font-size:11.5px;color:var(--soft);margin-bottom:5px;}
+.prog-top .n{color:var(--accent);font-weight:700;font-size:13px;}
+.chapter-chip{margin-left:auto;background:var(--accentsoft);color:var(--accent);padding:2px 10px;border-radius:12px;font-size:11px;}
+.progress-track{height:7px;background:var(--paper2);border-radius:6px;overflow:hidden;border:1px solid var(--line);}
+.progress-fill{height:100%;width:0;background:linear-gradient(90deg,var(--accent2),var(--accent));border-radius:6px;transition:width .5s;}
+.prog-label{display:flex;justify-content:space-between;font-size:10.5px;color:var(--faint);margin-top:4px;}
+.page-head{padding:26px 0 16px;text-align:center;}
+.page-head h1{font-size:24px;margin:0 0 6px;font-weight:500;}
+.page-head .sub{color:var(--soft);font-size:13px;}
+.page-head .quote{color:var(--faint);font-size:12.5px;font-style:italic;margin-top:10px;}
+.tools{display:flex;gap:9px;flex-wrap:wrap;margin:6px 0 20px;}
+.tools input,.tools select{border:1px solid var(--line);background:var(--card);border-radius:10px;padding:9px 12px;outline:none;}
+.tools input{flex:1;min-width:180px;}
+.tools input:focus,.tools select:focus{border-color:var(--accent2);}
+.btn{border:1px solid var(--accent);background:var(--accent);color:#fff;border-radius:10px;padding:9px 17px;font-size:13px;transition:.18s;}
+.btn:hover{background:#9d5b4b;}
+.btn.ghost{background:var(--card);color:var(--accent);border-color:var(--line2);}
+.btn.ghost:hover{border-color:var(--accent);}
+.btn.sm{padding:6px 12px;font-size:12px;border-radius:8px;}
+.btn.danger{background:transparent;color:var(--red);border-color:transparent;}
+.btn.danger:hover{background:#FBEAE5;}
+.group{margin-bottom:26px;}
+.group-title{display:flex;align-items:center;gap:8px;font-family:Georgia,serif;font-size:16px;margin:0 0 12px;padding-bottom:7px;border-bottom:1px dashed var(--line2);}
+.group-title .dot{width:8px;height:8px;border-radius:50%;background:var(--accent2);}
+.group-title .cnt{font-family:inherit;font-size:11px;color:var(--faint);font-weight:400;margin-left:4px;}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(258px,1fr));gap:14px;}
+.card{position:relative;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:15px;box-shadow:var(--shadow);transition:.2s;overflow:hidden;}
+.card:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(94,72,44,.12);border-color:var(--line2);}
+.card.done{background:rgba(246,214,222,.45);border-color:#EBC6D0;opacity:.92;}
+.card.done .card-action{text-decoration:line-through;text-decoration-color:rgba(120,80,90,.4);}
+.card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.card-num{font-family:Georgia,serif;font-size:11.5px;color:var(--faint);}
+.pill{font-size:10.5px;padding:2px 9px;border-radius:10px;border:1px solid;}
+.pill.red{color:var(--red);background:#FBEDE9;border-color:#F0CFC5;}
+.pill.yellow{color:var(--yellow);background:#FAF2DC;border-color:#EBDDB4;}
+.pill.green{color:var(--green);background:#EAF3EC;border-color:#CBE0CF;}
+.card-dir{font-size:11px;color:var(--accent);margin-bottom:5px;letter-spacing:.4px;}
+.card-action{font-size:15px;font-weight:600;line-height:1.45;margin-bottom:7px;}
+.card-standard{font-size:11.5px;color:var(--soft);line-height:1.5;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
+.card-bottom{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;font-size:11px;}
+.card-bottom span{padding:2px 8px;border-radius:8px;background:var(--paper2);color:var(--soft);}
+.card-photo{margin-top:10px;}
+.card-photo img{width:100%;height:110px;object-fit:cover;border-radius:9px;}
+.stamp{display:none;position:absolute;top:10px;right:10px;transform:rotate(12deg);border:2px solid rgba(178,106,88,.55);color:rgba(178,106,88,.75);border-radius:50%;width:74px;height:74px;align-items:center;justify-content:center;text-align:center;font-size:10px;line-height:1.3;font-family:Georgia,serif;padding:4px;z-index:2;}
+.card.done .stamp{display:flex;}
+.card-ops{display:flex;gap:2px;margin-top:10px;padding-top:9px;border-top:1px dashed var(--line);}
+.card-ops button{border:0;background:transparent;color:var(--soft);font-size:11px;padding:4px 8px;border-radius:6px;}
+.card-ops button:hover{background:var(--paper2);color:var(--accent);}
+.card-ops button.join{color:var(--accent);}
+.empty{text-align:center;color:var(--faint);padding:44px 16px;font-size:13px;border:1px dashed var(--line2);border-radius:14px;background:rgba(255,253,248,.5);}
+.today-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 16px;margin-bottom:16px;flex-wrap:wrap;}
+.today-bar .date{font-family:Georgia,serif;font-size:16px;}
+.today-bar .date small{font-family:inherit;color:var(--soft);font-size:12px;margin-left:6px;}
+.todo-card{display:flex;align-items:flex-start;gap:10px;}
+.chk{width:22px;height:22px;border:1.5px solid var(--line2);border-radius:7px;flex:none;display:flex;align-items:center;justify-content:center;font-size:13px;color:#fff;transition:.15s;margin-top:1px;}
+.chk.on{background:var(--green);border-color:var(--green);}
+.todo-main{flex:1;min-width:0;}
+.todo-main .t{font-weight:600;margin-bottom:3px;}
+.todo-main .m{font-size:11px;color:var(--soft);}
+.todo-main .meta{font-size:11px;color:var(--faint);margin-top:4px;display:flex;gap:8px;flex-wrap:wrap;}
+.stats3{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:17px;box-shadow:var(--shadow);}
+.panel h3{margin:0 0 13px;font-size:14px;font-weight:600;display:flex;align-items:center;gap:7px;}
+.panel h3 .ic{color:var(--accent);}
+.mood-row{display:flex;align-items:center;gap:9px;margin-bottom:9px;font-size:12px;}
+.mood-row .bar{flex:1;height:8px;background:var(--paper2);border-radius:5px;overflow:hidden;}
+.mood-row .bar i{display:block;height:100%;background:var(--accent2);border-radius:5px;}
+.mood-row .lab{width:42px;color:var(--soft);}
+.mood-row .num{width:22px;text-align:right;color:var(--faint);}
+.cloud{display:flex;flex-wrap:wrap;gap:7px;}
+.cloud .tag{padding:3px 10px;border-radius:12px;background:var(--accentsoft);color:var(--accent);line-height:1.3;}
+.letter{background:linear-gradient(180deg,#FFFDF7,#FBF4E8);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:14px;}
+.letter .lt{font-size:13px;color:var(--accent);margin-bottom:10px;}
+.letter-item{padding:9px 0;border-bottom:1px dashed var(--line);font-size:12.5px;color:var(--ink);}
+.letter-item:last-child{border-bottom:0;}
+.letter-item .d{color:var(--faint);font-size:10.5px;margin-right:8px;}
+.periods{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;}
+.period{border:1px solid var(--line);border-radius:12px;padding:14px;background:var(--paper);}
+.period .p-name{font-size:12px;color:var(--soft);margin-bottom:6px;}
+.period .p-num{font-family:Georgia,serif;font-size:26px;color:var(--accent);line-height:1;}
+.period .p-num small{font-size:12px;color:var(--faint);font-family:inherit;}
+.period .p-bar{height:6px;background:var(--paper2);border-radius:4px;margin:10px 0 7px;overflow:hidden;}
+.period .p-bar i{display:block;height:100%;background:var(--green);border-radius:4px;}
+.period .p-say{font-size:11px;color:var(--soft);line-height:1.5;}
+.mask{position:fixed;inset:0;background:rgba(59,53,45,.38);display:none;align-items:center;justify-content:center;padding:18px;z-index:100;}
+.mask.on{display:flex;}
+.box{background:var(--paper);border:1px solid var(--line2);border-radius:18px;width:100%;max-width:460px;max-height:88vh;overflow:auto;box-shadow:0 20px 60px rgba(59,53,45,.25);}
+.box.wide{max-width:560px;}
+.box-h{display:flex;align-items:flex-start;justify-content:space-between;padding:18px 20px;border-bottom:1px solid var(--line);}
+.box-h h2{margin:0;font-size:18px;font-weight:500;}
+.box-h .meta{font-size:11.5px;color:var(--soft);margin-top:3px;}
+.box-h .x{border:0;background:transparent;font-size:24px;color:var(--faint);line-height:1;padding:0 4px;}
+.box-b{padding:18px 20px;}
+.box-f{padding:14px 20px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:9px;flex-wrap:wrap;}
+.fld{margin-bottom:14px;}
+.fld label{display:block;font-size:12px;color:var(--soft);margin-bottom:6px;}
+.fld input[type=text],.fld input[type=date],.fld select,.fld textarea{width:100%;border:1px solid var(--line);background:var(--card);border-radius:10px;padding:9px 11px;outline:none;}
+.fld input:focus,.fld select:focus,.fld textarea:focus{border-color:var(--accent2);}
+.fld textarea{min-height:66px;resize:vertical;}
+.fld-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.hint{background:var(--paper2);border-radius:10px;padding:10px 12px;font-size:12px;color:var(--soft);line-height:1.55;}
+.moods{display:flex;flex-wrap:wrap;gap:6px;}
+.moods button{border:1px solid var(--line);background:var(--card);border-radius:14px;padding:5px 12px;font-size:12px;color:var(--soft);}
+.moods button.on{background:var(--accentsoft);border-color:var(--accent2);color:var(--accent);}
+.photo-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.photo-row input{font-size:11px;max-width:190px;}
+.photo-prev{width:56px;height:56px;object-fit:cover;border-radius:8px;display:none;border:1px solid var(--line);}
+.chkline{display:flex;align-items:center;gap:8px;font-size:13px;}
+.chkline input{width:18px;height:18px;accent-color:var(--green);}
+.pick-list{max-height:46vh;overflow:auto;border:1px solid var(--line);border-radius:12px;}
+.pick-item{display:flex;align-items:center;gap:10px;padding:10px 13px;border-bottom:1px dashed var(--line);cursor:pointer;}
+.pick-item:last-child{border-bottom:0;}
+.pick-item:hover{background:var(--paper2);}
+.pick-item input{width:17px;height:17px;accent-color:var(--accent);}
+.pick-item .pl-t{flex:1;}
+.pick-item .pl-t b{display:block;font-size:13px;}
+.pick-item .pl-t span{font-size:11px;color:var(--faint);}
+.center-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;}
+.auth-card{width:100%;max-width:400px;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:32px 28px;box-shadow:var(--shadow);text-align:center;}
+.auth-card .logo{font-family:Georgia,serif;font-size:25px;margin-bottom:4px;}
+.auth-card .tagline{color:var(--soft);font-size:12.5px;margin-bottom:24px;}
+.btn-block{width:100%;display:block;margin-bottom:10px;padding:12px;}
+.notice{font-size:11px;color:var(--soft);line-height:1.6;margin-top:14px;text-align:left;background:var(--paper2);padding:10px 12px;border-radius:10px;}
+.err{color:var(--red);font-size:12px;margin-top:8px;min-height:16px;}
+.onboard-opt{display:block;text-align:left;width:100%;border:1px solid var(--line);background:var(--card);border-radius:14px;padding:16px;margin-bottom:12px;transition:.18s;}
+.onboard-opt:hover{border-color:var(--accent);transform:translateY(-1px);}
+.onboard-opt b{display:block;font-size:14px;margin-bottom:4px;}
+.onboard-opt span{font-size:11.5px;color:var(--soft);}
+.onboard-opt.rec{background:linear-gradient(180deg,#FFF6F1,#FFFDF9);border-color:var(--accent2);}
+.toast{position:fixed;left:50%;bottom:30px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:10px 20px;border-radius:20px;font-size:12.5px;opacity:0;pointer-events:none;transition:.25s;z-index:200;max-width:90vw;text-align:center;}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0);}
+.local-badge{display:inline-block;font-size:11px;color:var(--green);background:#EAF3EC;border:1px solid #CBE0CF;padding:1px 8px;border-radius:10px;margin-left:6px;}
+.io-row{display:flex;gap:9px;flex-wrap:wrap;align-items:center;margin-top:6px;}
+.io-row input{font-size:12px;max-width:220px;}
+.kv{font-size:12px;color:var(--soft);line-height:1.9;}
+.kv b{color:var(--ink);font-weight:600;}
+@media(max-width:640px){
+  .stats3{grid-template-columns:1fr;}
+  .grid{grid-template-columns:1fr;}
+  .brand span{display:none;}
+  .nav-inner{padding:9px 14px 6px;}
+  .user-chip{display:none;}
+  .tabs button{padding:6px 11px;font-size:12px;}
+  .page-head h1{font-size:21px;}
+  .fld-row{grid-template-columns:1fr;}
+  .tools input{min-width:100%;}
+  .tools select{flex:1;min-width:44%;}
+  .box{max-height:92vh;}
+  .stamp{width:62px;height:62px;font-size:9px;}
+  .nav-right .icon-btn{padding:5px 9px;font-size:11px;}
+}
+</style>
+</head>
+<body>
+
+<!-- ========== 首次引导（仅空白版使用；预设版自动灌入） ========== -->
+<div id="onboardView" class="center-screen" style="display:none;">
+  <div class="auth-card" style="max-width:460px;">
+    <div class="logo serif" style="font-size:22px;">欢迎来到你的五年之旅</div>
+    <div class="tagline">先为手账准备起点，之后随时可以增删改</div>
+    <button class="onboard-opt rec" onclick="onboard('sample')">
+      <b>载入 30 条示例预设</b>
+      <span>一键填入这套完整的五年计划模板作为起点，再慢慢改成自己的。</span>
+    </button>
+    <button class="onboard-opt" onclick="onboard('blank')">
+      <b>从空白开始，自己设定</b>
+      <span>先建一条属于自己的卡片，完全按你的节奏来。</span>
+    </button>
+    <div class="err" id="onboardErr"></div>
+    <div class="notice">这是纯本地版本：所有数据只保存在本机浏览器里，不联网、不需要账号。请定期用「存档」导出备份。</div>
+  </div>
+</div>
+
+<!-- ========== 主应用 ========== -->
+<div id="appView" style="display:none;">
+  <header class="site">
+    <div class="nav-inner">
+      <div class="brand"><b>A Five-Year Journey</b><span>五年自由之旅</span><span class="local-badge">本地版</span></div>
+      <div class="nav-right">
+        <button class="icon-btn" onclick="openData()">存档</button>
+      </div>
+    </div>
+    <div class="progress-wrap">
+      <div class="prog-top">
+        <span><span class="n" id="statCount">0</span> / <span id="statTotal">0</span> 件已珍藏</span>
+        <span class="chapter-chip" id="chapterChip">第一章 · 启程</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="prog-label"><span id="progPct">0%</span><span id="progNext"></span></div>
+    </div>
+    <div class="nav-inner" style="padding-top:0;padding-bottom:8px;">
+      <nav class="tabs" style="margin:0 auto;">
+        <button class="on" id="tab-today" onclick="switchTab('today')">今日打卡</button>
+        <button id="tab-cards" onclick="switchTab('cards')">卡片库</button>
+        <button id="tab-stats" onclick="switchTab('stats')">人生旅途</button>
+      </nav>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <section id="page-today">
+      <div class="page-head">
+        <h1 class="serif">今天，你想走向哪里</h1>
+        <div class="sub">按此刻的状态，从卡片库里挑几件想做的事；做到就轻轻勾上。</div>
+      </div>
+      <div class="today-bar">
+        <div class="date serif" id="todayDate"></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="btn ghost sm" onclick="openPick()">＋ 从卡片库多选</button>
+          <button class="btn sm" onclick="openCardEditor(null)">＋ 新建卡片</button>
+        </div>
+      </div>
+      <div id="todayArea"></div>
+      <div class="panel" style="margin-top:18px;">
+        <h3><span class="ic">◷</span> 最近打卡</h3>
+        <div id="recentArea"></div>
+      </div>
+    </section>
+
+    <section id="page-cards" style="display:none;">
+      <div class="page-head">
+        <h1 class="serif">我的卡片库</h1>
+        <div class="sub">这些是你想成为的样子。随时可以修改、删除，或加入今天。</div>
+      </div>
+      <div class="tools">
+        <input type="text" id="search" placeholder="搜索想体验的事、满意的程度…" oninput="renderCards()">
+        <select id="filterDir" onchange="renderCards()"><option value="">全部大方向</option></select>
+        <select id="filterLevel" onchange="renderCards()"><option value="">全部分级</option></select>
+        <button class="btn ghost" onclick="openCardEditor(null)">＋ 新建卡片</button>
+      </div>
+      <div id="cardArea"></div>
+    </section>
+
+    <section id="page-stats" style="display:none;">
+      <div class="page-head">
+        <h1 class="serif">人生旅途</h1>
+        <div class="sub">不评判没做什么，只看看此刻的自己已经走到了哪里。</div>
+      </div>
+      <div class="stats3">
+        <div class="panel">
+          <h3><span class="ic">❀</span> 最近心情 Top3</h3>
+          <div id="moodTop"></div>
+        </div>
+        <div class="panel">
+          <h3><span class="ic">✦</span> 想法与问题 · 关键词</h3>
+          <div class="cloud" id="wordCloud"></div>
+        </div>
+      </div>
+      <div class="letter">
+        <div class="lt serif">✉ 写给现在的自己</div>
+        <div id="letterList"></div>
+      </div>
+      <div class="panel">
+        <h3><span class="ic">◷</span> 时光回顾 · 日 / 周 / 月 / 季 / 年</h3>
+        <div class="periods" id="periods"></div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<!-- 卡片编辑弹窗 -->
+<div class="mask" id="cardModal">
+  <div class="box">
+    <div class="box-h"><div><h2 class="serif" id="cmTitle">新建卡片</h2><div class="meta">记录一件你想体验、想成为的事</div></div><button class="x" onclick="closeMask('cardModal')">×</button></div>
+    <div class="box-b">
+      <div class="fld-row">
+        <div class="fld"><label>分级</label><select id="cf-level"></select></div>
+        <div class="fld"><label>大方向</label><select id="cf-dir"></select></div>
+      </div>
+      <div class="fld"><label>待体验（具体行动）</label><input type="text" id="cf-action" placeholder="例如：今天好好护肤了吗"></div>
+      <div class="fld"><label>做到满意的程度</label><textarea id="cf-standard" placeholder="做到什么地步、什么程度能让我满意"></textarea></div>
+    </div>
+    <div class="box-f">
+      <button class="btn ghost" onclick="closeMask('cardModal')">取消</button>
+      <button class="btn" id="cmSave" onclick="saveCard()">保存卡片</button>
+    </div>
+  </div>
+</div>
+
+<!-- 打卡详情弹窗 -->
+<div class="mask" id="logModal">
+  <div class="box">
+    <div class="box-h"><div><h2 class="serif">记录这一天</h2><div class="meta" id="lmMeta"></div></div><button class="x" onclick="closeMask('logModal')">×</button></div>
+    <div class="box-b">
+      <div class="fld"><label>做到满意的程度</label><div class="hint" id="lmStandard"></div></div>
+      <div class="fld-row">
+        <div class="fld"><label>完成日期</label><input type="date" id="lm-date"></div>
+        <div class="fld"><label>完成情况</label><label class="chkline"><input type="checkbox" id="lm-done"> 这一天，我做到了</label></div>
+      </div>
+      <div class="fld"><label>心情</label><div class="moods" id="lm-mood"></div></div>
+      <div class="fld"><label>有什么思考吗 · 带着问题进入下一天</label><textarea id="lm-thought" placeholder="今天想到了什么？还想继续追问什么？"></textarea></div>
+      <div class="fld"><label>给自己的寄语</label><textarea id="lm-message" placeholder="想对现在的自己说点什么？"></textarea></div>
+      <div class="fld"><label>照片（压缩后存本机）</label><div class="photo-row"><input type="file" id="lm-photo" accept="image/*"><img class="photo-prev" id="lm-prev"><span id="lm-photo-hint" style="font-size:11px;color:var(--faint);">选择后自动压缩</span></div></div>
+    </div>
+    <div class="box-f">
+      <button class="btn danger" onclick="deleteLog()">移除今日</button>
+      <button class="btn ghost" onclick="closeMask('logModal')">取消</button>
+      <button class="btn" onclick="saveLog()">保存记录</button>
+    </div>
+  </div>
+</div>
+
+<!-- 多选弹窗 -->
+<div class="mask" id="pickModal">
+  <div class="box wide">
+    <div class="box-h"><div><h2 class="serif">加入今天</h2><div class="meta">勾选想做的卡片，可多选</div></div><button class="x" onclick="closeMask('pickModal')">×</button></div>
+    <div class="box-b"><div class="pick-list" id="pickList"></div></div>
+    <div class="box-f">
+      <button class="btn ghost" onclick="closeMask('pickModal')">取消</button>
+      <button class="btn" onclick="confirmPick()">加入今日计划</button>
+    </div>
+  </div>
+</div>
+
+<!-- 存档/数据管理弹窗 -->
+<div class="mask" id="dataModal">
+  <div class="box">
+    <div class="box-h"><div><h2 class="serif">本机存档</h2><div class="meta">数据只存在这台电脑，不联网、无账号</div></div><button class="x" onclick="closeMask('dataModal')">×</button></div>
+    <div class="box-b">
+      <div class="hint">所有卡片、打卡、照片都保存在本浏览器的本地存储里，关闭页面或重启电脑都不会丢。但清理浏览器数据会导致丢失，请定期导出备份文件。</div>
+      <div class="fld" style="margin-top:16px;">
+        <div class="kv" id="dataStat"></div>
+      </div>
+      <div class="fld">
+        <label>备份与迁移</label>
+        <div class="io-row">
+          <button class="btn ghost sm" onclick="exportData()">导出备份 (.json)</button>
+          <input type="file" id="importFile" accept="application/json,.json">
+          <button class="btn ghost sm" onclick="importData()">导入备份</button>
+        </div>
+      </div>
+      <div class="fld">
+        <label>危险操作</label>
+        <div class="io-row"><button class="btn danger sm" onclick="resetAll()">清空全部数据</button></div>
+      </div>
+      <div class="hint" style="margin-top:6px;">「导出备份」会生成一个 json 文件，换电脑或将来迁移到云端时用它导入即可。</div>
+    </div>
+    <div class="box-f"><button class="btn" onclick="closeMask('dataModal')">完成</button></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* =========================================================
+ * 构建模式（由构建脚本注入）：preset = 自带30条预设；blank = 空白引导
+ * ========================================================= */
+var BUILD_MODE = "blank";
+var STORE_KEY = "fiveYearJourney_blank_v1";
+
+/* =========================================================
+ * 存储适配层 —— 迁移云端时只需替换这一层，业务代码无需改动
+ * 当前：LocalAdapter（localStorage，纯本地、离线可用）
+ * 未来云端的同名接口骨架见文末 CloudAdapter 注释
+ * ========================================================= */
+var Adapter = {
+  name:'local',
+  read: function(){
+    try{
+      var raw = localStorage.getItem(STORE_KEY);
+      return raw ? JSON.parse(raw) : null;
+    }catch(e){ console.warn('读取本地存档失败',e); return null; }
+  },
+  write: function(state){
+    try{
+      localStorage.setItem(STORE_KEY, JSON.stringify(state));
+      return {ok:true};
+    }catch(e){
+      return {ok:false, error:(e&&e.name==='QuotaExceededError')?'本地空间已满，请到「存档」导出备份后删除部分照片':'保存失败：'+(e&&e.message||e)};
+    }
+  },
+  clear: function(){ localStorage.removeItem(STORE_KEY); }
+};
+
+/* ============ 默认数据 ============ */
+var DEFAULT_LEVELS = ["红灯","黄灯","绿灯"];
+var DEFAULT_DIRS = ["健康外形","饮食健康","学识增长","拓展语言工具","关于热爱","现生工作","感受世界","经济管理"];
+var DEFAULT_MOODS = ["开心","平静","充实","疲惫","焦虑","低落","感动","一般"];
+var SAMPLE = [
+ ["红灯","健康外形","你今天好好护肤了吗","能先坚持一个月再养成习惯就好啦"],
+ ["红灯","饮食健康","补剂有记得吃吗","体检报告良好不要营养不良了"],
+ ["红灯","饮食健康","今天的3大杯喝够了吗","每天坚持喝2L以上的水"],
+ ["红灯","健康外形","好好遵循番茄钟休息间隔","不要得病不要过劳"],
+ ["黄灯","健康外形","今天向高壮帅哥努力靠拢了吗","能习惯运动，达到心仪的体态、体脂率与肌肉量，扩展更多的圈子如攀岩、冲浪、骑射等，三大项60、60、75"],
+ ["黄灯","现生工作","学习每日推送，发掘制定更多合适的学习内容，总结可复用的项目经验","半年内熟练掌握电子料全品类采购，进入AI具身相关行业公司，工资翻倍"],
+ ["绿灯","学识增长","看书（人类学、社会学、经济学、心理学）","每个月至少都有接触3-5次"],
+ ["绿灯","学识增长","看纪录片（双语、对工作或热爱等有帮助的内容）","每个月至少都有接触3-5次"],
+ ["红灯","饮食健康","今天控制住嘴巴了吗","低成本高完成度遵循健康食谱"],
+ ["红灯","经济管理","不是不花是要缓慢花、有秩序花、因地制宜花、有理有据花","养成记账的习惯，买东西前三思，红色项一年只产生3次且金额总共在900元以下，黄色项一年只产生12次且金额总共在2400以下，黑色项控制年总金额在5000以下。"],
+ ["绿灯","学识增长","光收藏不学是假把式，今天又发现哪些小知识呢","把B站与xhs上收藏的博主有用内容都学一遍"],
+ ["黄灯","拓展语言工具","可以练习英音、可以去看TED、可以学习词组造句","英语能日常无压力交流以及最好雅思、托福、GRE、bec高分过"],
+ ["黄灯","拓展语言工具","可以继续看月曜日、可以看点纪录片、可以找ai制定商务场景训练","日语保持日常交流的水平以及商务用法"],
+ ["绿灯","拓展语言工具","先熟记发音与规则，单独拆解2-3句歌词理解并记忆","法语能唱红与黑所有歌曲"],
+ ["绿灯","拓展语言工具","你是否为keegan拼过命","西语能掌握发音与简单日常用语"],
+ ["绿灯","拓展语言工具","藏语、闽语、蒙语、德语、俄语、韩语、维语、泰语、印地语、意大利语吴语任君选择","掌握其他语言的发音使得可以自如唱歌，有余力可以进一步掌握日常沟通交流"],
+ ["绿灯","关于热爱","hi hi hi 好厨子今天伯了吗？","掌握透视、速写、人体、光影、色彩、厚涂"],
+ ["绿灯","关于热爱","建模是时候更进一步了！想法的实现从单独建档开始吧","把无料list上的想法通通实现"],
+ ["绿灯","关于热爱","今天是勤劳小裁缝？还是五毒圣体毛娘？还是无所不能道具师？","把cos list上的角色出完，尽量提高自制含量"],
+ ["绿灯","关于热爱","今天也是一位逍遥小道士呢","全面了解道教文化与知识，掌握基础六爻、八卦、八字、梅花易数、四柱命理、紫微斗数、奇门遁甲、风水、符箓画法"],
+ ["绿灯","感受世界","出去走走、见见朋友或者找陌生人说说话","保持跟世界的联结"],
+ ["绿灯","关于热爱","开启疯狂汲取布灯、电影构图、情绪调色的知识，可以用bjd实践","掌握灯光布置、光影运用、分镜、构图、调色、摄影，拍出满意的cos照，能作为副业更好了"],
+ ["绿灯","关于热爱","你也想高p能见人吧，kuku整","掌握ps、lr技术，能够大合成图片"],
+ ["黄灯","学识增长","来吧学习，掌握大蟒蛇！","掌握python，起码能看懂ai给的代码并且能识别错误"],
+ ["黄灯","学识增长","只要学不死就往死里学！","了解PCB，能够支撑无料制作即可"],
+ ["绿灯","关于热爱","live2D、写小说、各种考证、注音、摩斯密码、收纳知识、设计房子布局、设计新爬箱与新鸡笼","探索更多人生支线"],
+ ["绿灯","学识增长","今天思考什么限定主题呢？","输入同时能每周都保持输出"],
+ ["绿灯","关于热爱","今天尝试什么画法呢？","能缩短cos妆的时间为2h内但质量需要提升并掌握不同画法的技巧，游刃有余出不同角色；缩短日常妆的时间为1h但要学会匹配不同穿搭有不同妆容"],
+ ["绿灯","关于热爱","今天开始动作拆解！","能唱跳双子的Roki；与11出呆人时能唱跳；可以的话唱跳韩舞"],
+ ["绿灯","关于热爱","管理你的面部表情！别的学累了吧，来畅快手语","掌握日常手语出尼古拉斯时能不ooc"]
+];
+
+/* ============ 状态 ============ */
+var STATE=null;                 // {options:{level,direction,mood}, cards:[], logs:[], nextId:1, createdAt}
+var LEVELS=[], DIRS=[], MOODS=[], CARDS=[], LOGS=[];
+var CUR_TAB='today', EDIT_CARD_ID=null, EDIT_LOG_ID=null, PHOTO_DATA=null, PICK_SET={};
+
+/* ============ 工具 ============ */
+function $(id){return document.getElementById(id);}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function toast(m){var t=$('toast');t.textContent=m;t.classList.add('on');clearTimeout(toast._t);toast._t=setTimeout(function(){t.classList.remove('on');},2400);}
+function today(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function fmtCN(s){if(!s)return '';var p=String(s).slice(0,10).split('-');return p.length===3?(p[0]+'年'+(+p[1])+'月'+(+p[2])+'日'):String(s);}
+function dateOffset(n){var d=new Date();d.setDate(d.getDate()+n);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function closeMask(id){$(id).classList.remove('on');}
+function newId(){return STATE.nextId++;}
+function persist(){
+  var r=Adapter.write(STATE);
+  if(!r.ok){toast(r.error);return false;}
+  return true;
+}
+
+/* ============ 新建状态 & 启动 ============ */
+function freshState(withSample){
+  var st={options:{level:DEFAULT_LEVELS.slice(),direction:DEFAULT_DIRS.slice(),mood:DEFAULT_MOODS.slice()},cards:[],logs:[],nextId:1,createdAt:new Date().toISOString(),mode:BUILD_MODE};
+  if(withSample){
+    SAMPLE.forEach(function(x,i){
+      st.cards.push({id:st.nextId++,card_no:i+1,level:x[0],direction:x[1],action:x[2],standard:x[3],archived:false,created_at:new Date().toISOString()});
+    });
+  }
+  return st;
+}
+function boot(){
+  var st=Adapter.read();
+  if(st && st.options && st.cards && st.logs){
+    STATE=st;
+    enterApp();
+  }else if(BUILD_MODE==='preset'){
+    STATE=freshState(true);persist();enterApp();
+    setTimeout(function(){toast('已载入 30 条预设，开始你的五年之旅吧');},300);
+  }else{
+    $('onboardView').style.display='flex';
+  }
+}
+function onboard(mode){
+  $('onboardErr').textContent='';
+  try{
+    STATE=freshState(mode==='sample');
+    if(!persist()){$('onboardErr').textContent='保存失败，请检查浏览器存储设置';return;}
+    enterApp();
+    toast(mode==='sample'?'已载入 30 条示例预设':'从空白开始，去建第一条卡片吧');
+    if(mode==='blank')setTimeout(function(){openCardEditor(null);},200);
+  }catch(e){$('onboardErr').textContent=(e&&e.message)||'初始化失败，请重试';}
+}
+function enterApp(){
+  LEVELS=STATE.options.level.slice();DIRS=STATE.options.direction.slice();MOODS=STATE.options.mood.slice();
+  $('onboardView').style.display='none';$('appView').style.display='block';
+  bootApp();
+}
+function bootApp(){
+  $('todayDate').innerHTML=today()+'<small>'+['周日','周一','周二','周三','周四','周五','周六'][new Date().getDay()]+'</small>';
+  loadData();buildSelects();renderAll();
+}
+function loadData(){
+  CARDS=STATE.cards.filter(function(x){return !x.archived;}).sort(function(a,b){return (a.card_no||0)-(b.card_no||0);});
+  LOGS=STATE.logs.slice().sort(function(a,b){return String(b.log_date||'').localeCompare(String(a.log_date||''));});
+}
+
+/* ============ 下拉选项 ============ */
+function buildSelects(){
+  function fill(id,arr){var el=$(id);if(!el)return;el.innerHTML='';arr.forEach(function(x){var o=document.createElement('option');o.value=x;o.textContent=x;el.appendChild(o);});}
+  fill('cf-level',LEVELS);fill('cf-dir',DIRS);
+  var fd=$('filterDir'),fl=$('filterLevel');
+  fd.innerHTML='<option value="">全部大方向</option>';DIRS.forEach(function(x){var o=document.createElement('option');o.value=x;o.textContent=x;fd.appendChild(o);});
+  fl.innerHTML='<option value="">全部分级</option>';LEVELS.forEach(function(x){var o=document.createElement('option');o.value=x;o.textContent=x;fl.appendChild(o);});
+  renderMoodBtns();
+}
+function renderMoodBtns(){
+  var el=$('lm-mood');if(!el)return;el.innerHTML='';
+  MOODS.forEach(function(m){var b=document.createElement('button');b.type='button';b.textContent=m;b.onclick=function(){b.classList.toggle('on');};el.appendChild(b);});
+}
+
+/* ============ 页签 ============ */
+function switchTab(w){
+  CUR_TAB=w;
+  ['today','cards','stats'].forEach(function(t){$('page-'+t).style.display=(t===w?'block':'none');$('tab-'+t).classList.toggle('on',t===w);});
+  if(w==='stats')renderStats();
+  if(w==='cards')renderCards();
+  window.scrollTo(0,0);
+}
+
+/* ============ 进度 ============ */
+var CHAPTERS=[
+ {min:0,name:'第一章 · 启程'},{min:1,name:'第二章 · 萌芽'},{min:5,name:'第三章 · 探索'},
+ {min:10,name:'第四章 · 深耕'},{min:20,name:'第五章 · 绽放'},{min:30,name:'第六章 · 从容'},{min:50,name:'终章 · 自由'}
+];
+function cardById(id){return CARDS.find(function(c){return c.id===id;})||null;}
+function doneLogs(){return LOGS.filter(function(l){return l.done;});}
+function renderProgress(){
+  var total=CARDS.length,n=doneLogs().length;
+  $('statTotal').textContent=total;$('statCount').textContent=n;
+  var pct=total?Math.min(100,Math.round(n/total*100)):0;
+  $('progressFill').style.width=pct+'%';$('progPct').textContent=pct+'%';
+  var ci=0;for(var i=0;i<CHAPTERS.length;i++){if(n>=CHAPTERS[i].min)ci=i;}
+  $('chapterChip').textContent=CHAPTERS[ci].name;
+  var nx=CHAPTERS[ci+1];$('progNext').textContent=nx?('距「'+nx.name+'」还差 '+(nx.min-n)+' 件'):'已抵达终章';
+}
+
+/* ============ 今日 ============ */
+function todayLogs(){var t=today();return LOGS.filter(function(l){return l.log_date===t;});}
+function renderToday(){
+  var list=todayLogs(),area=$('todayArea');
+  if(!list.length){area.innerHTML='<div class="empty">今天还没有安排。点上面「从卡片库多选」，挑几件想做的事吧。</div>';}
+  else{
+    var h='<div class="grid">';
+    list.forEach(function(l){
+      var c=cardById(l.card_id);if(!c)return;
+      var metas=[];if(l.mood)metas.push('☺ '+esc(l.mood));if(l.thought)metas.push('✎ 有思考');if(l.message)metas.push('✉ 有寄语');if(l.photo_data)metas.push('▣ 有照片');
+      h+='<div class="card todo-card'+(l.done?' done':'')+'">'
+        +(l.done?'<div class="stamp">'+fmtCN(l.done_at||l.log_date)+'<br>完成啦！</div>':'')
+        +'<div class="chk'+(l.done?' on':'')+'" onclick="quickDone('+l.id+')">'+(l.done?'✓':'')+'</div>'
+        +'<div class="todo-main" onclick="openLog('+l.id+')">'
+        +'<div class="t">'+esc(c.action)+'</div>'
+        +'<div class="m">'+esc(c.direction)+' · '+esc(c.level)+'</div>'
+        +(metas.length?'<div class="meta">'+metas.join(' · ')+'</div>':'')
+        +'</div></div>';
+    });
+    area.innerHTML=h+'</div>';
+  }
+  renderRecent();
+}
+function renderRecent(){
+  var byDate={};
+  LOGS.forEach(function(l){(byDate[l.log_date]=byDate[l.log_date]||[]).push(l);});
+  var dates=Object.keys(byDate).filter(function(d){return d!==today();}).sort().reverse().slice(0,7);
+  if(!dates.length){$('recentArea').innerHTML='<div style="color:var(--faint);font-size:12px;">还没有历史打卡，从今天开始吧。</div>';return;}
+  var h='';
+  dates.forEach(function(d){
+    var arr=byDate[d],dn=arr.filter(function(x){return x.done;}).length;
+    h+='<div class="letter-item"><span class="d">'+fmtCN(d)+'</span>完成 '+dn+' / '+arr.length+' 件'
+      +(arr.some(function(x){return x.mood;})?' · 心情：'+esc(arr.filter(function(x){return x.mood;}).map(function(x){return x.mood;}).join('、')):'')
+      +'</div>';
+  });
+  $('recentArea').innerHTML=h;
+}
+function quickDone(id){
+  var r=STATE.logs.find(function(x){return x.id===id;});if(!r)return;
+  var nv=!r.done;
+  r.done=nv;r.done_at=nv?new Date().toISOString():null;
+  if(!persist()){r.done=!nv;return;}
+  loadData();renderToday();renderProgress();
+  if(nv)toast('完成啦，珍藏 +1');
+}
+
+/* ============ 多选 ============ */
+function openPick(){
+  if(!CARDS.length){toast('卡片库还是空的，先新建一张卡片吧');openCardEditor(null);return;}
+  PICK_SET={};
+  var h='';
+  CARDS.forEach(function(c){
+    h+='<label class="pick-item"><input type="checkbox" data-id="'+c.id+'" onchange="PICK_SET['+c.id+']=this.checked">'
+      +'<span class="pl-t"><b>'+esc(c.action)+'</b><span>'+esc(c.direction)+' · '+esc(c.level)+'</span></span></label>';
+  });
+  $('pickList').innerHTML=h;$('pickModal').classList.add('on');
+}
+function confirmPick(){
+  var ids=Object.keys(PICK_SET).filter(function(k){return PICK_SET[k];}).map(Number);
+  var existing=todayLogs().map(function(l){return l.card_id;});
+  var rows=ids.filter(function(id){return existing.indexOf(id)<0;});
+  if(!rows.length){closeMask('pickModal');toast('没有新选择');return;}
+  rows.forEach(function(id){STATE.logs.push({id:newId(),card_id:id,log_date:today(),done:false,done_at:null,mood:'',thought:'',message:'',photo_data:null,created_at:new Date().toISOString()});});
+  if(!persist()){return;}
+  closeMask('pickModal');toast('已加入 '+rows.length+' 件到今天');
+  loadData();renderAll();
+}
+
+/* ============ 卡片库 ============ */
+function renderCards(){
+  var kw=($('search').value||'').trim().toLowerCase(),dir=$('filterDir').value,lvl=$('filterLevel').value;
+  var list=CARDS.filter(function(c){
+    if(dir&&c.direction!==dir)return false;if(lvl&&c.level!==lvl)return false;
+    if(kw&&((c.action+' '+c.standard).toLowerCase().indexOf(kw)<0))return false;
+    return true;
+  });
+  if(!list.length){$('cardArea').innerHTML='<div class="empty">没有符合条件的卡片，换个关键词或新建一条吧。</div>';return;}
+  var groups={};list.forEach(function(c){(groups[c.direction||'未分类']=groups[c.direction||'未分类']||[]).push(c);});
+  var h='';
+  DIRS.concat(Object.keys(groups).filter(function(d){return DIRS.indexOf(d)<0;})).forEach(function(d){
+    if(!groups[d])return;
+    h+='<div class="group"><div class="group-title"><span class="dot"></span>'+esc(d)+'<span class="cnt">'+groups[d].length+' 件</span></div><div class="grid">';
+    groups[d].forEach(function(c){
+      var lk=c.level==='红灯'?'red':c.level==='黄灯'?'yellow':'green';
+      h+='<div class="card">'
+        +'<div class="card-top"><span class="card-num">№ '+String(c.card_no||0).padStart(3,'0')+'</span><span class="pill '+lk+'">'+esc(c.level)+'</span></div>'
+        +'<div class="card-dir">'+esc(c.direction)+'</div>'
+        +'<div class="card-action">'+esc(c.action)+'</div>'
+        +'<div class="card-standard">'+esc(c.standard)+'</div>'
+        +'<div class="card-ops"><button class="join" onclick="quickJoin('+c.id+')">加入今天</button><button onclick="openCardEditor('+c.id+')">编辑</button><button class="danger" onclick="deleteCard('+c.id+')">删除</button></div>'
+        +'</div>';
+    });
+    h+='</div></div>';
+  });
+  $('cardArea').innerHTML=h;
+}
+function quickJoin(id){
+  var existing=todayLogs().map(function(l){return l.card_id;});
+  if(existing.indexOf(id)>=0){toast('今天已经在计划里啦');switchTab('today');return;}
+  STATE.logs.push({id:newId(),card_id:id,log_date:today(),done:false,done_at:null,mood:'',thought:'',message:'',photo_data:null,created_at:new Date().toISOString()});
+  if(!persist()){return;}
+  toast('已加入今天');loadData();renderAll();switchTab('today');
+}
+function openCardEditor(id){
+  EDIT_CARD_ID=id;var c=id?cardById(id):null;
+  $('cmTitle').textContent=c?'编辑卡片':'新建卡片';
+  $('cf-level').value=c?c.level:(LEVELS[0]||'');
+  $('cf-dir').value=c?c.direction:(DIRS[0]||'');
+  $('cf-action').value=c?c.action:'';$('cf-standard').value=c?c.standard:'';
+  $('cardModal').classList.add('on');
+}
+function saveCard(){
+  var action=$('cf-action').value.trim();
+  if(!action){toast('请填写「待体验」');return;}
+  var payload={level:$('cf-level').value,direction:$('cf-dir').value,action:action,standard:$('cf-standard').value.trim()};
+  if(EDIT_CARD_ID){
+    var c=STATE.cards.find(function(x){return x.id===EDIT_CARD_ID;});
+    if(c){c.level=payload.level;c.direction=payload.direction;c.action=payload.action;c.standard=payload.standard;}
+  }else{
+    STATE.cards.push({id:newId(),card_no:CARDS.length+1,level:payload.level,direction:payload.direction,action:payload.action,standard:payload.standard,archived:false,created_at:new Date().toISOString()});
+  }
+  if(!persist()){return;}
+  closeMask('cardModal');toast('已保存');loadData();renderAll();
+}
+function deleteCard(id){
+  var c=cardById(id);if(!c)return;
+  if(!confirm('确定删除卡片「'+c.action+'」吗？相关打卡记录会保留。'))return;
+  var rec=STATE.cards.find(function(x){return x.id===id;});if(rec)rec.archived=true;
+  if(!persist()){return;}
+  toast('已删除');loadData();renderAll();
+}
+
+/* ============ 打卡详情 ============ */
+function openLog(id){
+  EDIT_LOG_ID=id;var l=STATE.logs.find(function(x){return x.id===id;});if(!l)return;
+  var c=cardById(l.card_id);
+  $('lmMeta').textContent=(c?c.direction+' · '+c.level:'')+' · '+fmtCN(l.log_date);
+  $('lmStandard').textContent=c?c.standard:'';
+  $('lm-date').value=(l.done_at||l.log_date||today()).slice(0,10);
+  $('lm-done').checked=!!l.done;
+  $('lm-thought').value=l.thought||'';$('lm-message').value=l.message||'';
+  PHOTO_DATA=null;$('lm-photo').value='';
+  var prev=$('lm-prev');if(l.photo_data){prev.src=l.photo_data;prev.style.display='block';}else{prev.style.display='none';}
+  Array.prototype.forEach.call($('lm-mood').children,function(b){var on=b.textContent===l.mood;b.classList.toggle('on',on);});
+  $('logModal').classList.add('on');
+}
+function compressImage(file){
+  return new Promise(function(resolve,reject){
+    var reader=new FileReader();
+    reader.onload=function(e){
+      var img=new Image();
+      img.onload=function(){
+        var w=img.width,h=img.height,max=880;
+        if(w>max||h>max){var r=Math.min(max/w,max/h);w=Math.round(w*r);h=Math.round(h*r);}
+        var cv=document.createElement('canvas');cv.width=w;cv.height=h;
+        cv.getContext('2d').drawImage(img,0,0,w,h);
+        cv.toBlob(function(b){var fr=new FileReader();fr.onload=function(){resolve(fr.result);};fr.onerror=reject;fr.readAsDataURL(b);},'image/jpeg',0.62);
+      };
+      img.onerror=reject;img.src=e.target.result;
+    };
+    reader.onerror=reject;reader.readAsDataURL(file);
+  });
+}
+$('lm-photo').addEventListener('change',function(){
+  var f=this.files[0];if(!f)return;
+  compressImage(f).then(function(data){
+    PHOTO_DATA=data;
+    $('lm-prev').src=data;$('lm-prev').style.display='block';
+    $('lm-photo-hint').textContent='已压缩 '+Math.round(data.length/1024)+' KB';
+  }).catch(function(){toast('照片处理失败');});
+});
+function saveLog(){
+  var l=STATE.logs.find(function(x){return x.id===EDIT_LOG_ID;});if(!l)return;
+  var sel=$('lm-mood').querySelector('button.on');
+  var dateVal=$('lm-date').value||today();
+  l.done=$('lm-done').checked;
+  l.done_at=l.done?(dateVal+'T12:00:00'):null;
+  l.log_date=dateVal;
+  l.mood=sel?sel.textContent:'';
+  l.thought=$('lm-thought').value.trim();
+  l.message=$('lm-message').value.trim();
+  if(PHOTO_DATA)l.photo_data=PHOTO_DATA;
+  if(!persist()){return;}
+  closeMask('logModal');toast('记录已保存');loadData();renderAll();
+}
+function deleteLog(){
+  if(!confirm('确定把这条从今天移除吗？'))return;
+  var idx=STATE.logs.findIndex(function(x){return x.id===EDIT_LOG_ID;});
+  if(idx>=0)STATE.logs.splice(idx,1);
+  if(!persist()){return;}
+  closeMask('logModal');toast('已移除');loadData();renderAll();
+}
+
+/* ============ 统计 ============ */
+function renderStats(){renderMoodTop();renderWordCloud();renderLetters();renderPeriods();}
+function renderMoodTop(){
+  var cnt={};doneLogs().forEach(function(l){if(l.mood)cnt[l.mood]=(cnt[l.mood]||0)+1;});
+  var top=Object.keys(cnt).sort(function(a,b){return cnt[b]-cnt[a];}).slice(0,3);
+  if(!top.length){$('moodTop').innerHTML='<div style="color:var(--faint);font-size:12px;">还没有心情记录，去卡片里记一笔吧。</div>';return;}
+  var max=cnt[top[0]],h='';
+  top.forEach(function(m){h+='<div class="mood-row"><span class="lab">'+esc(m)+'</span><span class="bar"><i style="width:'+(cnt[m]/max*100)+'%"></i></span><span class="num">'+cnt[m]+'</span></div>';});
+  $('moodTop').innerHTML=h;
+}
+var STOP={今天:1,自己:1,一个:1,什么:1,可以:1,这个:1,我们:1,没有:1,就是:1,还是:1,已经:1,可能:1,觉得:1,为了:1,但是:1,如果:1,所以:1,因为:1,而且:1,然后:1,这样:1,那样:1,不是:1,不要:1,时候:1,东西:1,事情:1,真的:1,特别:1,非常:1,一直:1,现在:1,开始:1,需要:1,以及:1,或者:1,还有:1,的话:1,这些:1,那些:1,一点:1,一天:1};
+function renderWordCloud(){
+  var texts=LOGS.filter(function(l){return l.thought||l.message;}).map(function(l){return (l.thought||'')+' '+(l.message||'');});
+  if(!texts.length){$('wordCloud').innerHTML='<div style="color:var(--faint);font-size:12px;">写下思考或寄语后，词云会慢慢长出来。</div>';return;}
+  var freq={};
+  texts.forEach(function(t){var chunks=String(t).match(/[\u4e00-\u9fa5]{2,4}/g)||[];chunks.forEach(function(c){if(STOP[c])return;freq[c]=(freq[c]||0)+1;});});
+  var arr=Object.keys(freq).sort(function(a,b){return freq[b]-freq[a];}).slice(0,26);
+  $('wordCloud').innerHTML=arr.map(function(k){return '<span class="tag" style="font-size:'+(11+Math.min(6,freq[k]*1.5))+'px">'+esc(k)+'</span>';}).join('');
+}
+function renderLetters(){
+  var arr=LOGS.filter(function(l){return l.message;}).sort(function(a,b){return (b.log_date||'').localeCompare(a.log_date||'');}).slice(0,12);
+  if(!arr.length){$('letterList').innerHTML='<div style="color:var(--faint);font-size:12px;">还没有寄语，给自己留一句话吧。</div>';return;}
+  $('letterList').innerHTML=arr.map(function(l){return '<div class="letter-item"><span class="d">'+fmtCN(l.log_date)+'</span>'+esc(l.message)+'</div>';}).join('');
+}
+function rangeStats(from,to){
+  var arr=LOGS.filter(function(l){return l.log_date>=from&&l.log_date<=to;});
+  var done=arr.filter(function(l){return l.done;}).length;
+  return {done:done,total:arr.length,pct:arr.length?Math.round(done/arr.length*100):0};
+}
+function renderPeriods(){
+  var t=today(),d=new Date();
+  var dow=(d.getDay()+6)%7,ws=dateOffset(-dow);
+  var ms=t.slice(0,7)+'-01';
+  var q=Math.floor(d.getMonth()/3)*3,qs=d.getFullYear()+'-'+String(q+1).padStart(2,'0')+'-01';
+  var ys=d.getFullYear()+'-01-01';
+  var defs=[{n:'今天',f:t,t:t},{n:'本周',f:ws,t:t},{n:'本月',f:ms,t:t},{n:'本季度',f:qs,t:t},{n:'本年',f:ys,t:t}];
+  $('periods').innerHTML=defs.map(function(p){
+    var s=rangeStats(p.f,p.t);
+    var say=s.total===0?'这段时间还没有打卡记录。':(s.pct>=80?'很稳，状态在线，继续从容走。':s.pct>=50?'有节奏地在推进，慢慢来就好。':'按自己的步调，能看到就已经很好。');
+    return '<div class="period"><div class="p-name">'+p.n+'</div><div class="p-num">'+s.done+'<small> / '+s.total+' 件</small></div>'
+      +'<div class="p-bar"><i style="width:'+s.pct+'%"></i></div><div class="p-say">'+say+'</div></div>';
+  }).join('');
+}
+
+/* ============ 存档管理 ============ */
+function openData(){
+  var size=0;try{size=(localStorage.getItem(STORE_KEY)||'').length;}catch(e){}
+  $('dataStat').innerHTML='卡片 <b>'+STATE.cards.filter(function(c){return !c.archived;}).length+'</b> 张 · 打卡 <b>'+STATE.logs.length+'</b> 条 · 照片 <b>'+STATE.logs.filter(function(l){return l.photo_data;}).length+'</b> 张<br>本机占用约 <b>'+(size/1024).toFixed(1)+' KB</b> · 版本 <b>'+esc(STATE.mode||'local')+'</b>';
+  $('dataModal').classList.add('on');
+}
+function exportData(){
+  try{
+    var blob=new Blob([JSON.stringify(STATE,null,2)],{type:'application/json'});
+    var url=URL.createObjectURL(blob),a=document.createElement('a');
+    a.href=url;a.download='五年之旅-存档-'+today()+'.json';document.body.appendChild(a);a.click();
+    setTimeout(function(){document.body.removeChild(a);URL.revokeObjectURL(url);},500);
+    toast('备份已导出');
+  }catch(e){toast('导出失败：'+(e&&e.message||e));}
+}
+function importData(){
+  var f=$('importFile').files[0];if(!f){toast('请先选择备份文件');return;}
+  var reader=new FileReader();
+  reader.onload=function(e){
+    try{
+      var st=JSON.parse(e.target.result);
+      if(!st||!st.options||!Array.isArray(st.cards)||!Array.isArray(st.logs))throw new Error('文件格式不正确');
+      if(!st.nextId)st.nextId=1;
+      STATE=st;
+      if(!persist())return;
+      closeMask('dataModal');loadData();buildSelects();renderAll();
+      toast('备份已导入');
+    }catch(err){toast('导入失败：'+(err&&err.message||err));}
+  };
+  reader.readAsText(f);
+}
+function resetAll(){
+  if(!confirm('确定清空全部数据吗？此操作不可恢复，建议先导出备份。'))return;
+  if(!confirm('再次确认：真的要删除所有卡片、打卡和照片吗？'))return;
+  Adapter.clear();STATE=freshState(false);persist();
+  closeMask('dataModal');loadData();buildSelects();renderAll();
+  toast('已清空，可以从空白重新开始了');
+}
+
+/* ============ 全局渲染 ============ */
+function renderAll(){renderProgress();renderToday();renderCards();renderStats();}
+
+/* =========================================================
+ * 云端迁移预留接口（当前不启用，保留以便将来改造）：
+ * var CloudAdapter = {
+ *   name:'cloud',
+ *   read: async function(){ return await cloud.database.from('journey_state').select('*')...; },
+ *   write: async function(state){ return await cloud.database.from('journey_state').upsert(state); },
+ *   subscribe: function(cb){ /__/ 订阅数据变更，回调里重新 read + renderAll }
+ * };
+ * 迁移步骤：接入云 SDK 与登录 → 实现上面三个方法 → 将 Adapter 指向 CloudAdapter
+ * → 在 boot() 里先鉴权再 read。业务函数（quickDone/saveCard/saveLog…）无需改动，
+ * 只需把 persist() 改为 await Adapter.write(STATE) 即可。
+ * ========================================================= */
+
+
+/* ===== PWA: 离线缓存（仅 http/https 下注册，file:// 静默跳过） ===== */
+if('serviceWorker' in navigator && (location.protocol==='https:'||location.protocol==='http:')){
+  window.addEventListener('load',function(){
+    navigator.serviceWorker.register('./sw.js').catch(function(){});
+  });
+}
+
+boot();
+</script>
+</body>
+</html>
