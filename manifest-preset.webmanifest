@@ -1,0 +1,16 @@
+{
+  "name": "A Five-Year Journey · 五年之旅（含30预设）",
+  "short_name": "五年之旅",
+  "description": "五年自由之旅打卡手账，含30条预设卡片",
+  "start_url": "./preset.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FBF8F0",
+  "theme_color": "#FBF8F0",
+  "lang": "zh-CN",
+  "icons": [
+    { "src": "./icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "./icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
