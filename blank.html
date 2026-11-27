@@ -1203,7 +1203,7 @@ document.addEventListener('touchstart',autoStartBgm);
 /* ===== PWA: 离线缓存（仅 http/https 下注册，file:// 静默跳过） ===== */
 if('serviceWorker' in navigator && (location.protocol==='https:'||location.protocol==='http:')){
   window.addEventListener('load',function(){
-    navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'}).then(function(reg){
+    navigator.serviceWorker.register('./sw.js?v=4',{updateViaCache:'none'}).then(function(reg){
       reg.update().catch(function(){});
       // 新版本激活后自动重载一次（session 标记防止循环刷新）
       navigator.serviceWorker.addEventListener('message',function(ev){
