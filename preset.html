@@ -185,6 +185,19 @@ header.site{position:sticky;top:0;z-index:50;background:rgba(251,248,240,.94);ba
 .io-row input{font-size:12px;max-width:220px;}
 .kv{font-size:12px;color:var(--soft);line-height:1.9;}
 .kv b{color:var(--ink);font-weight:600;}
+/* 大方向自定义标签 */
+.dir-select-row{display:flex;gap:8px;align-items:center;}
+.dir-select-row select{flex:1;min-width:0;}
+.dir-select-row .add{border:1px solid var(--accent);background:var(--card);color:var(--accent);border-radius:10px;padding:9px 12px;font-size:12px;white-space:nowrap;}
+.tag-manage-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+.tag-manage-row input{flex:1;min-width:150px;border:1px solid var(--line);background:var(--card);border-radius:10px;padding:8px 10px;outline:none;}
+.tag-manage-row input:focus{border-color:var(--accent2);}
+.dir-tags{display:flex;flex-wrap:wrap;gap:8px;}
+.dir-tag{display:inline-flex;align-items:center;gap:6px;padding:5px 8px 5px 11px;border-radius:14px;background:var(--accentsoft);color:var(--accent);font-size:12px;}
+.dir-tag.locked{background:var(--paper2);color:var(--soft);}
+.dir-tag .use{font-size:10px;opacity:.7;}
+.dir-tag .del{border:0;background:transparent;color:var(--accent);font-size:15px;line-height:1;padding:0 2px;opacity:.65;}
+.dir-tag .del:hover{opacity:1;}
 @media(max-width:640px){
   .stats3{grid-template-columns:1fr;}
   .grid{grid-template-columns:1fr;}
@@ -265,6 +278,7 @@ header.site{position:sticky;top:0;z-index:50;background:rgba(251,248,240,.94);ba
         <input type="text" id="search" placeholder="搜索想体验的事、满意的程度…" oninput="renderCards()">
         <select id="filterDir" onchange="renderCards()"><option value="">全部大方向</option></select>
         <select id="filterLevel" onchange="renderCards()"><option value="">全部分级</option></select>
+        <button class="btn ghost" onclick="openTagManager()">⚑ 管理方向</button>
         <button class="btn ghost" onclick="openCardEditor(null)">＋ 新建卡片</button>
       </div>
       <div id="cardArea"></div>
@@ -304,10 +318,11 @@ header.site{position:sticky;top:0;z-index:50;background:rgba(251,248,240,.94);ba
     <div class="box-b">
       <div class="fld-row">
         <div class="fld"><label>分级</label><select id="cf-level"></select></div>
-        <div class="fld"><label>大方向</label><select id="cf-dir"></select></div>
+        <div class="fld"><label>大方向</label><div class="dir-select-row"><select id="cf-dir"></select><button type="button" class="add" onclick="openTagManager('cf-dir')">＋ 自定义</button></div></div>
       </div>
       <div class="fld"><label>待体验（具体行动）</label><input type="text" id="cf-action" placeholder="例如：你今天好好护肤了吗"></div>
       <div class="fld"><label>做到满意的程度</label><textarea id="cf-standard" placeholder="做到什么地步、什么程度能让我满意"></textarea></div>
+      <div class="fld" style="margin-bottom:0;"><label class="chkline"><input type="checkbox" id="cf-permanent" checked> 永久加入卡片库</label><div class="hint" style="margin-top:8px;font-size:11px;">勾选 → 存入卡片库，可反复加入不同日子；不勾选 → 只作为今天的一次性计划，完成后不留库。</div></div>
     </div>
     <div class="box-f">
       <button class="btn ghost" onclick="closeMask('cardModal')">取消</button>
@@ -380,6 +395,19 @@ header.site{position:sticky;top:0;z-index:50;background:rgba(251,248,240,.94);ba
       <div class="hint" style="margin-top:6px;">「导出备份」会生成一个 json 文件，换电脑或将来迁移到云端时用它导入即可。</div>
     </div>
     <div class="box-f"><button class="btn" onclick="closeMask('dataModal')">完成</button></div>
+  </div>
+</div>
+
+<!-- 大方向标签管理弹窗（两版共用） -->
+<div class="mask" id="tagModal">
+  <div class="box">
+    <div class="box-h"><div><h2 class="serif">管理大方向标签</h2><div class="meta">添加你自己的方向，也可整理已有标签</div></div><button class="x" onclick="closeMask('tagModal')">×</button></div>
+    <div class="box-b">
+      <div class="tag-manage-row"><input type="text" id="tagInput" placeholder="输入新方向，例如：手作、摄影" onkeydown="if(event.key==='Enter')addDirTag();"><button class="btn sm" onclick="addDirTag()">添加</button></div>
+      <div class="dir-tags" id="dirTagList"></div>
+      <div class="hint" style="margin-top:14px;">系统自带方向不可删除；自定义方向在没有卡片使用时可删除。删除后相关下拉会同步更新。</div>
+    </div>
+    <div class="box-f"><button class="btn" onclick="closeMask('tagModal')">完成</button></div>
   </div>
 </div>
 
@@ -474,6 +502,9 @@ function persist(){
   if(!r.ok){toast(r.error);return false;}
   return true;
 }
+/* 跨版本钩子：自用版保持空实现（零动画/零音乐）；公开版在文末覆盖 */
+function playFx(){}
+function startAmbient(){}
 
 /* ============ 新建状态 & 启动 ============ */
 function freshState(withPreset){
@@ -518,6 +549,53 @@ function buildSelects(){
   fl.innerHTML='<option value="">全部分级</option>';LEVELS.forEach(function(x){var o=document.createElement('option');o.value=x;o.textContent=x;fl.appendChild(o);});
   renderMoodBtns();
 }
+/* ============ 自定义大方向标签 ============ */
+var TAG_RETURN='';
+function isSysDir(d){return DEFAULT_DIRS.indexOf(d)>=0;}
+function dirUsage(d){return STATE.cards.filter(function(c){return !c.archived&&c.direction===d;}).length;}
+function openTagManager(returnId){
+  TAG_RETURN=returnId||'';
+  renderDirTags();
+  if($('tagInput'))$('tagInput').value='';
+  $('tagModal').classList.add('on');
+}
+function renderDirTags(){
+  var el=$('dirTagList');if(!el)return;el.innerHTML='';
+  STATE.options.direction.forEach(function(d){
+    var sys=isSysDir(d),used=dirUsage(d);
+    var tag=document.createElement('span');
+    tag.className='dir-tag'+(sys?' locked':'');
+    var label=document.createElement('span');label.textContent=d;tag.appendChild(label);
+    if(used){var u=document.createElement('span');u.className='use';u.textContent='· '+used+' 张';tag.appendChild(u);}
+    if(!sys){
+      var x=document.createElement('button');x.className='del';x.textContent='×';x.title='删除该方向';
+      x.onclick=function(){removeDir(d);};tag.appendChild(x);
+    }
+    el.appendChild(tag);
+  });
+}
+function addDirTag(){
+  var inp=$('tagInput');if(!inp)return;
+  var v=(inp.value||'').trim();
+  if(!v){toast('请输入方向名称');return;}
+  if(STATE.options.direction.indexOf(v)>=0){toast('这个方向已存在');return;}
+  STATE.options.direction.push(v);
+  if(!persist())return;
+  inp.value='';DIRS=STATE.options.direction.slice();
+  buildSelects();renderDirTags();
+  if(TAG_RETURN&&$(TAG_RETURN))$(TAG_RETURN).value=v;
+  toast('已添加方向「'+v+'」');
+}
+function removeDir(d){
+  if(isSysDir(d)){toast('系统自带方向不能删除');return;}
+  if(dirUsage(d)){toast('还有 '+dirUsage(d)+' 张卡片用着「'+d+'」，改完再删');return;}
+  if(!confirm('确定删除方向「'+d+'」吗？'))return;
+  STATE.options.direction=STATE.options.direction.filter(function(x){return x!==d;});
+  if(!persist())return;
+  DIRS=STATE.options.direction.slice();
+  buildSelects();renderDirTags();renderCards();
+  toast('已删除方向「'+d+'」');
+}
 function renderMoodBtns(){
   var el=$('lm-mood');if(!el)return;el.innerHTML='';
   MOODS.forEach(function(m){var b=document.createElement('button');b.type='button';b.textContent=m;b.onclick=function(){b.classList.toggle('on');};el.appendChild(b);});
@@ -537,14 +615,15 @@ var CHAPTERS=[
  {min:0,name:'第一章 · 启程'},{min:1,name:'第二章 · 萌芽'},{min:5,name:'第三章 · 探索'},
  {min:10,name:'第四章 · 深耕'},{min:20,name:'第五章 · 绽放'},{min:30,name:'第六章 · 从容'},{min:50,name:'终章 · 自由'}
 ];
-function cardById(id){return CARDS.find(function(c){return c.id===id;})||null;}
+function cardById(id){return (STATE.cards||[]).find(function(c){return c.id===id;})||null;}
 function doneLogs(){return LOGS.filter(function(l){return l.done;});}
+function currentChapterIndex(){var n=doneLogs().length,ci=0;for(var i=0;i<CHAPTERS.length;i++){if(n>=CHAPTERS[i].min)ci=i;}return ci;}
 function renderProgress(){
   var total=CARDS.length,n=doneLogs().length;
   $('statTotal').textContent=total;$('statCount').textContent=n;
   var pct=total?Math.min(100,Math.round(n/total*100)):0;
   $('progressFill').style.width=pct+'%';$('progPct').textContent=pct+'%';
-  var ci=0;for(var i=0;i<CHAPTERS.length;i++){if(n>=CHAPTERS[i].min)ci=i;}
+  var ci=currentChapterIndex();
   $('chapterChip').textContent=CHAPTERS[ci].name;
   var nx=CHAPTERS[ci+1];$('progNext').textContent=nx?('距「'+nx.name+'」还差 '+(nx.min-n)+' 件'):'已抵达终章';
 }
@@ -588,20 +667,26 @@ function renderRecent(){
 }
 function quickDone(id){
   var r=STATE.logs.find(function(x){return x.id===id;});if(!r)return;
+  var before=currentChapterIndex();
   var nv=!r.done;
   r.done=nv;r.done_at=nv?new Date().toISOString():null;
   if(!persist()){r.done=!nv;return;}
   loadData();renderToday();renderProgress();
-  if(nv)toast('完成啦，珍藏 +1');
+  if(nv){
+    playFx('confetti');
+    if(currentChapterIndex()>before)setTimeout(function(){playFx('milestone');},450);
+    toast('完成啦，珍藏 +1');
+  }
 }
 
 /* ============ 多选（支持按分级/大方向/关键词快速定位） ============ */
 function openPick(){
   if(!CARDS.length){toast('卡片库还是空的，先新建一张卡片吧');openCardEditor(null);return;}
   PICK_SET={};
-  // 初始化大方向筛选下拉（复用已存在的选项）
+  // 每次打开都重建大方向下拉，确保自定义标签即时生效
   var sel=$('pickDir');
-  if(sel && sel.options.length<=1){
+  if(sel){
+    sel.innerHTML='<option value="">全部大方向</option>';
     DIRS.slice().sort(function(a,b){return a.localeCompare(b,'zh');}).forEach(function(d){
       var o=document.createElement('option');o.value=d;o.textContent=d;sel.appendChild(o);
     });
@@ -617,12 +702,13 @@ function renderPickList(){
   var lvl=($('pickLevel')&&$('pickLevel').value)||'';
   var dir=($('pickDir')&&$('pickDir').value)||'';
   var list=CARDS.filter(function(c){
+    if(c.permanent===false)return false;
     if(lvl&&c.level!==lvl)return false;
     if(dir&&c.direction!==dir)return false;
     if(kw&&((c.action+' '+(c.standard||'')).toLowerCase().indexOf(kw)<0))return false;
     return true;
   });
-  if(!list.length){$('pickList').innerHTML='<div class="empty">没有符合条件的卡片，换个筛选条件试试。</div>';return;}
+  if(!list.length){$('pickList').innerHTML='<div class="empty">没有符合条件的永久卡片，换个筛选条件试试。</div>';return;}
   var h='';
   list.forEach(function(c){
     var checked=PICK_SET[c.id]?' checked':'';
@@ -638,7 +724,7 @@ function confirmPick(){
   if(!rows.length){closeMask('pickModal');toast('没有新选择');return;}
   rows.forEach(function(id){STATE.logs.push({id:newId(),card_id:id,log_date:today(),done:false,done_at:null,mood:'',thought:'',message:'',photo_data:null,created_at:new Date().toISOString()});});
   if(!persist()){return;}
-  closeMask('pickModal');toast('已加入 '+rows.length+' 件到今天');
+  closeMask('pickModal');toast('已加入 '+rows.length+' 件到今天');playFx('flyin');
   loadData();renderAll();
 }
 
@@ -646,11 +732,12 @@ function confirmPick(){
 function renderCards(){
   var kw=($('search').value||'').trim().toLowerCase(),dir=$('filterDir').value,lvl=$('filterLevel').value;
   var list=CARDS.filter(function(c){
+    if(c.permanent===false)return false; // 一次性计划不进卡片库
     if(dir&&c.direction!==dir)return false;if(lvl&&c.level!==lvl)return false;
     if(kw&&((c.action+' '+c.standard).toLowerCase().indexOf(kw)<0))return false;
     return true;
   });
-  if(!list.length){$('cardArea').innerHTML='<div class="empty">没有符合条件的卡片，换个关键词或新建一条吧。</div>';return;}
+  if(!list.length){$('cardArea').innerHTML='<div class="empty">卡片库还是空的。点「＋ 新建卡片」并勾选「永久加入卡片库」即可存进来。</div>';return;}
   var groups={};list.forEach(function(c){(groups[c.direction||'未分类']=groups[c.direction||'未分类']||[]).push(c);});
   var h='';
   DIRS.concat(Object.keys(groups).filter(function(d){return DIRS.indexOf(d)<0;})).forEach(function(d){
@@ -675,7 +762,7 @@ function quickJoin(id){
   if(existing.indexOf(id)>=0){toast('今天已经在计划里啦');switchTab('today');return;}
   STATE.logs.push({id:newId(),card_id:id,log_date:today(),done:false,done_at:null,mood:'',thought:'',message:'',photo_data:null,created_at:new Date().toISOString()});
   if(!persist()){return;}
-  toast('已加入今天');loadData();renderAll();switchTab('today');
+  toast('已加入今天');playFx('flyin');loadData();renderAll();switchTab('today');
 }
 function openCardEditor(id){
   EDIT_CARD_ID=id;var c=id?cardById(id):null;
@@ -683,20 +770,36 @@ function openCardEditor(id){
   $('cf-level').value=c?c.level:(LEVELS[0]||'');
   $('cf-dir').value=c?c.direction:(DIRS[0]||'');
   $('cf-action').value=c?c.action:'';$('cf-standard').value=c?c.standard:'';
+  var perm=c?(c.permanent!==false):true;
+  $('cf-permanent').checked=perm;
+  $('cf-permanent').disabled=!!c; // 已存在的卡片不改动其库属性，避免打卡记录错乱
   $('cardModal').classList.add('on');
 }
 function saveCard(){
   var action=$('cf-action').value.trim();
   if(!action){toast('请填写「待体验」');return;}
-  var payload={level:$('cf-level').value,direction:$('cf-dir').value,action:action,standard:$('cf-standard').value.trim()};
+  var payload={
+    level:$('cf-level').value,direction:$('cf-dir').value,
+    action:action,standard:$('cf-standard').value.trim(),
+    permanent:$('cf-permanent').checked
+  };
   if(EDIT_CARD_ID){
     var c=STATE.cards.find(function(x){return x.id===EDIT_CARD_ID;});
     if(c){c.level=payload.level;c.direction=payload.direction;c.action=payload.action;c.standard=payload.standard;}
   }else{
-    STATE.cards.push({id:newId(),card_no:CARDS.length+1,level:payload.level,direction:payload.direction,action:payload.action,standard:payload.standard,archived:false,created_at:new Date().toISOString()});
+    var id=newId();
+    STATE.cards.push({id:id,card_no:CARDS.length+1,level:payload.level,direction:payload.direction,action:payload.action,standard:payload.standard,permanent:payload.permanent,archived:false,created_at:new Date().toISOString()});
+    // 未勾选永久库 → 直接作为今天的一次性计划
+    if(!payload.permanent){
+      STATE.logs.push({id:newId(),card_id:id,log_date:today(),done:false,done_at:null,mood:'',thought:'',message:'',photo_data:null,created_at:new Date().toISOString()});
+    }
   }
   if(!persist()){return;}
-  closeMask('cardModal');toast('已保存');loadData();renderAll();
+  closeMask('cardModal');
+  if(!EDIT_CARD_ID&&payload.permanent)playFx('sprout');
+  toast(!EDIT_CARD_ID&&!payload.permanent?'已加入今天（单次计划）':'已保存');
+  loadData();renderAll();
+  if(!EDIT_CARD_ID&&!payload.permanent)switchTab('today');
 }
 function deleteCard(id){
   var c=cardById(id);if(!c)return;
@@ -747,6 +850,7 @@ $('lm-photo').addEventListener('change',function(){
 });
 function saveLog(){
   var l=STATE.logs.find(function(x){return x.id===EDIT_LOG_ID;});if(!l)return;
+  var before=currentChapterIndex(),wasDone=!!l.done;
   var sel=$('lm-mood').querySelector('button.on');
   var dateVal=$('lm-date').value||today();
   l.done=$('lm-done').checked;
@@ -757,7 +861,9 @@ function saveLog(){
   l.message=$('lm-message').value.trim();
   if(PHOTO_DATA)l.photo_data=PHOTO_DATA;
   if(!persist()){return;}
-  closeMask('logModal');toast('记录已保存');loadData();renderAll();
+  closeMask('logModal');toast('记录已保存');
+  if(l.done&&!wasDone){playFx('confetti');if(currentChapterIndex()>before)setTimeout(function(){playFx('milestone');},450);}
+  loadData();renderAll();
 }
 function deleteLog(){
   if(!confirm('确定把这条从今天移除吗？'))return;
@@ -814,7 +920,9 @@ function renderPeriods(){
 /* ============ 存档管理 ============ */
 function openData(){
   var size=0;try{size=(localStorage.getItem(STORE_KEY)||'').length;}catch(e){}
-  $('dataStat').innerHTML='卡片 <b>'+STATE.cards.filter(function(c){return !c.archived;}).length+'</b> 张 · 打卡 <b>'+STATE.logs.length+'</b> 条 · 照片 <b>'+STATE.logs.filter(function(l){return l.photo_data;}).length+'</b> 张<br>本机占用约 <b>'+(size/1024).toFixed(1)+' KB</b> · 版本 <b>'+esc(STATE.mode||'local')+'</b>';
+  var live=STATE.cards.filter(function(c){return !c.archived;});
+  var perm=live.filter(function(c){return c.permanent!==false;}).length;
+  $('dataStat').innerHTML='永久卡片 <b>'+perm+'</b> 张 · 单次计划 <b>'+(live.length-perm)+'</b> 张 · 打卡 <b>'+STATE.logs.length+'</b> 条 · 照片 <b>'+STATE.logs.filter(function(l){return l.photo_data;}).length+'</b> 张<br>本机占用约 <b>'+(size/1024).toFixed(1)+' KB</b> · 版本 <b>'+esc(STATE.mode||'local')+'</b>';
   $('dataModal').classList.add('on');
 }
 function exportData(){
