@@ -185,6 +185,19 @@ header.site{position:sticky;top:0;z-index:50;background:rgba(251,248,240,.94);ba
 .io-row input{font-size:12px;max-width:220px;}
 .kv{font-size:12px;color:var(--soft);line-height:1.9;}
 .kv b{color:var(--ink);font-weight:600;}
+/* 大方向自定义标签 */
+.dir-select-row{display:flex;gap:8px;align-items:center;}
+.dir-select-row select{flex:1;min-width:0;}
+.dir-select-row .add{border:1px solid var(--accent);background:var(--card);color:var(--accent);border-radius:10px;padding:9px 12px;font-size:12px;white-space:nowrap;}
+.tag-manage-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+.tag-manage-row input{flex:1;min-width:150px;border:1px solid var(--line);background:var(--card);border-radius:10px;padding:8px 10px;outline:none;}
+.tag-manage-row input:focus{border-color:var(--accent2);}
+.dir-tags{display:flex;flex-wrap:wrap;gap:8px;}
+.dir-tag{display:inline-flex;align-items:center;gap:6px;padding:5px 8px 5px 11px;border-radius:14px;background:var(--accentsoft);color:var(--accent);font-size:12px;}
+.dir-tag.locked{background:var(--paper2);color:var(--soft);}
+.dir-tag .use{font-size:10px;opacity:.7;}
+.dir-tag .del{border:0;background:transparent;color:var(--accent);font-size:15px;line-height:1;padding:0 2px;opacity:.65;}
+.dir-tag .del:hover{opacity:1;}
 @media(max-width:640px){
   .stats3{grid-template-columns:1fr;}
   .grid{grid-template-columns:1fr;}
@@ -209,13 +222,16 @@ header.site{position:sticky;top:0;z-index:50;background:rgba(251,248,240,.94);ba
 .guide-ol li{margin:7px 0;}
 .guide-ol b{color:var(--ink);}
 
-/* 背景旅行轨迹动画层 */
-#journeyScene{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
-.trail{position:absolute;bottom:-40px;width:2px;height:2px;opacity:.5;}
-.trail::before{content:'';position:absolute;left:-1px;top:-6px;width:4px;height:4px;border-radius:50%;background:var(--accent2);box-shadow:0 0 8px var(--accent2);}
-@keyframes floatUp{0%{transform:translateY(0) rotate(0deg);opacity:0;}10%{opacity:.55;}90%{opacity:.35;}100%{transform:translateY(-105vh) rotate(360deg);opacity:0;}}
-#sceneClock{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font-family:Georgia,serif;font-size:min(36vw,320px);color:rgba(178,106,88,.035);z-index:0;pointer-events:none;white-space:nowrap;}
-@keyframes clockTick{from{transform:translate(-50%,-50%) rotate(0);}to{transform:translate(-50%,-50%) rotate(360deg);}}
+/* ===== 触发型动画层：只在事件发生时出现，播完自动移除，绝非常驻 ===== */
+#fxLayer{position:fixed;inset:0;z-index:120;pointer-events:none;overflow:hidden;}
+@keyframes petalFall{0%{transform:translate(0,-8vh) rotate(0);opacity:0;}12%{opacity:.9;}100%{transform:translate(var(--dx,20px),108vh) rotate(var(--rot,360deg));opacity:0;}}
+.fx-petal{position:absolute;top:-20px;width:10px;height:14px;border-radius:70% 0 70% 0;opacity:0;animation:petalFall var(--dur,2.2s) ease-in forwards;}
+@keyframes bubbleUp{0%{transform:translate(-50%,12px) scale(.86);opacity:0;}20%{opacity:1;transform:translate(-50%,0) scale(1);}80%{opacity:1;}100%{transform:translate(-50%,-26px);opacity:0;}}
+.fx-bubble{position:absolute;left:50%;bottom:16%;transform:translateX(-50%);background:var(--card);border:1px solid var(--accent2);color:var(--accent);border-radius:20px;padding:9px 18px;font-size:13px;box-shadow:0 6px 20px rgba(94,72,44,.15);white-space:nowrap;animation:bubbleUp 1.8s ease forwards;}
+@keyframes slideToast{0%{transform:translateY(30px);opacity:0;}15%{transform:translateY(0);opacity:1;}85%{opacity:1;}100%{transform:translateY(-8px);opacity:0;}}
+.fx-slide{position:absolute;left:50%;bottom:64px;transform:translateX(-50%);background:var(--ink);color:#fff;border-radius:16px;padding:9px 18px;font-size:12.5px;white-space:nowrap;animation:slideToast 2s ease forwards;}
+@keyframes bannerGlow{0%{transform:translate(-50%,-14px) scale(.96);opacity:0;}18%{opacity:1;transform:translate(-50%,0) scale(1);}78%{opacity:1;}100%{transform:translate(-50%,-6px);opacity:0;}}
+.fx-banner{position:absolute;left:50%;top:96px;transform:translateX(-50%);background:linear-gradient(135deg,var(--accent2),var(--accent));color:#fff;border-radius:14px;padding:10px 20px;font-family:Georgia,"Songti SC",serif;font-size:14px;box-shadow:0 8px 24px rgba(178,106,88,.28);white-space:nowrap;animation:bannerGlow 2.4s ease forwards;}
 
 /* BGM 面板 */
 #bgmPanel{position:fixed;right:16px;top:120px;z-index:80;width:min(300px,calc(100vw - 32px));background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:0 8px 32px rgba(94,72,44,.16);padding:16px;display:none;}
@@ -242,10 +258,12 @@ header.site{position:sticky;top:0;z-index:50;background:rgba(251,248,240,.94);ba
     <div class="guide-box">
       <div class="guide-h">✦ 怎么用这本手账（约 1 分钟看完）</div>
       <ol class="guide-ol">
-        <li><b>先定方向</b>：点「开始设定」，新建你的第一张卡片——给它分级（红/黄/绿）、选一个大方向、写下「今天想做什么」和「做到什么程度算满意」。</li>
-        <li><b>每天挑几件</b>：在「今日打卡」点「从卡片库多选」，可按分级和大方向快速筛选定位，勾选想做的加入今天。</li>
-        <li><b>做到就盖戳</b>：点今天的卡片，勾选完成，它会变成透明粉并盖上日期印章；还能写心情、思考、寄语，加照片。</li>
+        <li><b>先定方向</b>：点「开始设定」，新建第一张卡片——选分级（红/黄/绿）、挑一个大方向。方向不够用？点「＋ 自定义」或在卡片库「⚑ 管理方向」里添加你自己的标签。</li>
+        <li><b>永久还是单次</b>：新建卡片时左下角默认勾选「永久加入卡片库」——会存入库可反复使用；取消勾选则只作为今天的一次性计划，完成后不留库。</li>
+        <li><b>每天挑几件</b>：在「今日打卡」点「从卡片库多选」，可按分级、大方向快速筛选，勾选想做的加入今天。</li>
+        <li><b>做到就盖戳</b>：点今天的卡片勾选完成，它会变透明粉并盖上日期印章。完成时会有花瓣飘落的小动画，进入新章节还有横幅提示——都是一闪而过的触发动画，不会挡住页面。</li>
         <li><b>回头看旅途</b>：「人生旅途」页有心情 Top3、关键词云、写给自己的话，以及日/周/月/季/年回顾——不为批判，只看你走到了哪里。</li>
+        <li><b>背景音乐</b>：默认会为你播放一段轻缓纯音乐（浏览器实时合成，无需联网）；点右上「♪ 音乐」可暂停、调音量，或换成你自己的本地音乐。</li>
         <li><b>记得备份</b>：所有数据只存在你这台设备的浏览器里。定期点右上「存档 → 导出备份」保存 JSON，换设备时导入即可。</li>
       </ol>
     </div>
@@ -317,6 +335,7 @@ header.site{position:sticky;top:0;z-index:50;background:rgba(251,248,240,.94);ba
         <input type="text" id="search" placeholder="搜索想体验的事、满意的程度…" oninput="renderCards()">
         <select id="filterDir" onchange="renderCards()"><option value="">全部大方向</option></select>
         <select id="filterLevel" onchange="renderCards()"><option value="">全部分级</option></select>
+        <button class="btn ghost" onclick="openTagManager()">⚑ 管理方向</button>
         <button class="btn ghost" onclick="openCardEditor(null)">＋ 新建卡片</button>
       </div>
       <div id="cardArea"></div>
@@ -356,10 +375,11 @@ header.site{position:sticky;top:0;z-index:50;background:rgba(251,248,240,.94);ba
     <div class="box-b">
       <div class="fld-row">
         <div class="fld"><label>分级</label><select id="cf-level"></select></div>
-        <div class="fld"><label>大方向</label><select id="cf-dir"></select></div>
+        <div class="fld"><label>大方向</label><div class="dir-select-row"><select id="cf-dir"></select><button type="button" class="add" onclick="openTagManager('cf-dir')">＋ 自定义</button></div></div>
       </div>
       <div class="fld"><label>待体验（具体行动）</label><input type="text" id="cf-action" placeholder="例如：今天读几页书、走一段路"></div>
       <div class="fld"><label>做到满意的程度</label><textarea id="cf-standard" placeholder="做到什么地步、什么程度能让我满意"></textarea></div>
+      <div class="fld" style="margin-bottom:0;"><label class="chkline"><input type="checkbox" id="cf-permanent" checked> 永久加入卡片库</label><div class="hint" style="margin-top:8px;font-size:11px;">勾选 → 存入卡片库，可反复加入不同日子；不勾选 → 只作为今天的一次性计划，完成后不留库。</div></div>
     </div>
     <div class="box-f">
       <button class="btn ghost" onclick="closeMask('cardModal')">取消</button>
@@ -435,22 +455,34 @@ header.site{position:sticky;top:0;z-index:50;background:rgba(251,248,240,.94);ba
   </div>
 </div>
 
-<!-- 时间与旅行元素：背景动画层 -->
-<div id="journeyScene" aria-hidden="true"></div>
-<div id="sceneClock" class="serif" aria-hidden="true">◷</div>
+<!-- 大方向标签管理弹窗（两版共用） -->
+<div class="mask" id="tagModal">
+  <div class="box">
+    <div class="box-h"><div><h2 class="serif">管理大方向标签</h2><div class="meta">添加你自己的方向，也可整理已有标签</div></div><button class="x" onclick="closeMask('tagModal')">×</button></div>
+    <div class="box-b">
+      <div class="tag-manage-row"><input type="text" id="tagInput" placeholder="输入新方向，例如：手作、摄影" onkeydown="if(event.key==='Enter')addDirTag();"><button class="btn sm" onclick="addDirTag()">添加</button></div>
+      <div class="dir-tags" id="dirTagList"></div>
+      <div class="hint" style="margin-top:14px;">系统自带方向不可删除；自定义方向在没有卡片使用时可删除。删除后相关下拉会同步更新。</div>
+    </div>
+    <div class="box-f"><button class="btn" onclick="closeMask('tagModal')">完成</button></div>
+  </div>
+</div>
 
-<!-- 自定义 BGM 面板 -->
+<!-- 触发型动画层：事件发生时插入元素，播完立即移除 -->
+<div id="fxLayer" aria-hidden="true"></div>
+
+<!-- BGM 面板：默认内置轻缓纯音乐，可换成自己的 -->
 <div id="bgmPanel">
   <div class="bgm-h">♪ 旅途背景音乐</div>
-  <div class="bgm-sub">选一首本地音乐，陪你走过五年</div>
+  <div class="bgm-sub">默认一段轻缓纯音乐，也可换成你自己的</div>
   <div class="bgm-btns">
-    <button class="btn ghost sm" onclick="$('bgmFile').click()">选择本地音乐</button>
+    <button class="btn ghost sm" onclick="$('bgmFile').click()">换成我的音乐</button>
     <button class="btn sm" id="bgmPlay" onclick="togglePlay()">播放</button>
   </div>
   <input type="file" id="bgmFile" accept="audio/*" style="display:none" onchange="loadBgm(this)">
   <div class="bgm-row"><label>音量</label><input type="range" id="bgmVol" min="0" max="1" step="0.05" value="0.5" oninput="setBgmVol(this.value)"></div>
-  <div class="bgm-now" id="bgmNow">尚未选择音乐</div>
-  <div class="bgm-sub" style="margin:10px 0 0;">音乐只保存在这台设备，不会上传。</div>
+  <div class="bgm-now" id="bgmNow">♪ 内置轻缓纯音乐</div>
+  <div class="bgm-sub" style="margin:10px 0 0;">内置音乐由浏览器实时合成，无需联网、无版权顾虑；自定义音乐只存这台设备。</div>
 </div>
 
 <!-- 使用说明弹窗 -->
@@ -460,11 +492,13 @@ header.site{position:sticky;top:0;z-index:50;background:rgba(251,248,240,.94);ba
     <div class="box-b">
       <div class="guide-box" style="margin:0;">
         <ol class="guide-ol">
-          <li><b>建立卡片</b>：在「卡片库」点「新建卡片」，设定分级（红=日常必做/黄=进阶目标/绿=长期探索）、大方向、待体验的具体行动，以及做到什么程度算满意。</li>
-          <li><b>每日打卡</b>：在「今日打卡」点「从卡片库多选」，可按分级/大方向/关键词快速筛选，勾选想做的加入今天。做到的点开卡片勾选完成——卡片变透明粉并盖上日期印章。</li>
-          <li><b>记录心情</b>：勾选时可选择今天的心情、写下思考和给自己的寄语，还能添加照片（会自动压缩后存在本机）。</li>
-          <li><b>查看旅途</b>：「人生旅途」页展示心情 Top3、关键词云、写给现在的自己，以及日/周/月/季/年回顾。</li>
-          <li><b>背景音乐</b>：点顶部「♪ 音乐」选择一首本地音频作为旅途 BGM，可播放/暂停、调音量，音乐只存本机。</li>
+          <li><b>建立卡片</b>：在「卡片库」点「新建卡片」，设定分级（红=日常必做/黄=进阶目标/绿=长期探索）、大方向、待体验的具体行动和满意程度。左下角勾选「永久加入卡片库」才会存入库；不勾选则只作为今天的一次性计划。</li>
+          <li><b>自定义方向</b>：大方向不够用时，点编辑框里的「＋ 自定义」，或在卡片库点「⚑ 管理方向」添加/删除标签。默认方向不可删，自定义方向在没有卡片使用时可删。</li>
+          <li><b>卡片库管理</b>：卡片库里的永久卡片随时可「编辑」修改内容或「删除」；删除后历史打卡记录仍会保留。一次性计划不进卡片库，完成后从今日列表移除即可。</li>
+          <li><b>每日打卡</b>：在「今日打卡」点「从卡片库多选」，可按分级/大方向/关键词筛选，勾选想做的加入今天。做到的点开勾选完成——卡片变透明粉并盖日期印章。</li>
+          <li><b>记录心情</b>：勾选时可选择心情、写下思考和给自己的寄语，还能添加照片（自动压缩后存在本机）。</li>
+          <li><b>触发动画</b>：完成打卡会飘落花瓣、新建卡片会冒出小芽、加入今天有滑入提示、跨章节有横幅庆祝。都是事件触发的短暂动画，播完自动消失，不会常驻屏幕中央。</li>
+          <li><b>背景音乐</b>：默认播放一段轻缓纯音乐（浏览器实时合成、无需联网）；点顶部「♪ 音乐」可暂停/播放、调音量，或「换成我的音乐」选本地音频，自定义音乐只存本机。</li>
           <li><b>数据备份</b>：点「存档 → 导出备份」保存 JSON 文件。清理浏览器数据会清空记录，请定期备份；换设备时用「导入备份」恢复。</li>
         </ol>
       </div>
@@ -531,6 +565,9 @@ function persist(){
   if(!r.ok){toast(r.error);return false;}
   return true;
 }
+/* 跨版本钩子：自用版保持空实现（零动画/零音乐）；公开版在文末覆盖 */
+function playFx(){}
+function startAmbient(){}
 
 /* ============ 新建状态 & 启动 ============ */
 function freshState(withPreset){
@@ -580,6 +617,53 @@ function buildSelects(){
   fl.innerHTML='<option value="">全部分级</option>';LEVELS.forEach(function(x){var o=document.createElement('option');o.value=x;o.textContent=x;fl.appendChild(o);});
   renderMoodBtns();
 }
+/* ============ 自定义大方向标签 ============ */
+var TAG_RETURN='';
+function isSysDir(d){return DEFAULT_DIRS.indexOf(d)>=0;}
+function dirUsage(d){return STATE.cards.filter(function(c){return !c.archived&&c.direction===d;}).length;}
+function openTagManager(returnId){
+  TAG_RETURN=returnId||'';
+  renderDirTags();
+  if($('tagInput'))$('tagInput').value='';
+  $('tagModal').classList.add('on');
+}
+function renderDirTags(){
+  var el=$('dirTagList');if(!el)return;el.innerHTML='';
+  STATE.options.direction.forEach(function(d){
+    var sys=isSysDir(d),used=dirUsage(d);
+    var tag=document.createElement('span');
+    tag.className='dir-tag'+(sys?' locked':'');
+    var label=document.createElement('span');label.textContent=d;tag.appendChild(label);
+    if(used){var u=document.createElement('span');u.className='use';u.textContent='· '+used+' 张';tag.appendChild(u);}
+    if(!sys){
+      var x=document.createElement('button');x.className='del';x.textContent='×';x.title='删除该方向';
+      x.onclick=function(){removeDir(d);};tag.appendChild(x);
+    }
+    el.appendChild(tag);
+  });
+}
+function addDirTag(){
+  var inp=$('tagInput');if(!inp)return;
+  var v=(inp.value||'').trim();
+  if(!v){toast('请输入方向名称');return;}
+  if(STATE.options.direction.indexOf(v)>=0){toast('这个方向已存在');return;}
+  STATE.options.direction.push(v);
+  if(!persist())return;
+  inp.value='';DIRS=STATE.options.direction.slice();
+  buildSelects();renderDirTags();
+  if(TAG_RETURN&&$(TAG_RETURN))$(TAG_RETURN).value=v;
+  toast('已添加方向「'+v+'」');
+}
+function removeDir(d){
+  if(isSysDir(d)){toast('系统自带方向不能删除');return;}
+  if(dirUsage(d)){toast('还有 '+dirUsage(d)+' 张卡片用着「'+d+'」，改完再删');return;}
+  if(!confirm('确定删除方向「'+d+'」吗？'))return;
+  STATE.options.direction=STATE.options.direction.filter(function(x){return x!==d;});
+  if(!persist())return;
+  DIRS=STATE.options.direction.slice();
+  buildSelects();renderDirTags();renderCards();
+  toast('已删除方向「'+d+'」');
+}
 function renderMoodBtns(){
   var el=$('lm-mood');if(!el)return;el.innerHTML='';
   MOODS.forEach(function(m){var b=document.createElement('button');b.type='button';b.textContent=m;b.onclick=function(){b.classList.toggle('on');};el.appendChild(b);});
@@ -599,14 +683,15 @@ var CHAPTERS=[
  {min:0,name:'第一章 · 启程'},{min:1,name:'第二章 · 萌芽'},{min:5,name:'第三章 · 探索'},
  {min:10,name:'第四章 · 深耕'},{min:20,name:'第五章 · 绽放'},{min:30,name:'第六章 · 从容'},{min:50,name:'终章 · 自由'}
 ];
-function cardById(id){return CARDS.find(function(c){return c.id===id;})||null;}
+function cardById(id){return (STATE.cards||[]).find(function(c){return c.id===id;})||null;}
 function doneLogs(){return LOGS.filter(function(l){return l.done;});}
+function currentChapterIndex(){var n=doneLogs().length,ci=0;for(var i=0;i<CHAPTERS.length;i++){if(n>=CHAPTERS[i].min)ci=i;}return ci;}
 function renderProgress(){
   var total=CARDS.length,n=doneLogs().length;
   $('statTotal').textContent=total;$('statCount').textContent=n;
   var pct=total?Math.min(100,Math.round(n/total*100)):0;
   $('progressFill').style.width=pct+'%';$('progPct').textContent=pct+'%';
-  var ci=0;for(var i=0;i<CHAPTERS.length;i++){if(n>=CHAPTERS[i].min)ci=i;}
+  var ci=currentChapterIndex();
   $('chapterChip').textContent=CHAPTERS[ci].name;
   var nx=CHAPTERS[ci+1];$('progNext').textContent=nx?('距「'+nx.name+'」还差 '+(nx.min-n)+' 件'):'已抵达终章';
 }
@@ -650,20 +735,26 @@ function renderRecent(){
 }
 function quickDone(id){
   var r=STATE.logs.find(function(x){return x.id===id;});if(!r)return;
+  var before=currentChapterIndex();
   var nv=!r.done;
   r.done=nv;r.done_at=nv?new Date().toISOString():null;
   if(!persist()){r.done=!nv;return;}
   loadData();renderToday();renderProgress();
-  if(nv)toast('完成啦，珍藏 +1');
+  if(nv){
+    playFx('confetti');
+    if(currentChapterIndex()>before)setTimeout(function(){playFx('milestone');},450);
+    toast('完成啦，珍藏 +1');
+  }
 }
 
 /* ============ 多选（支持按分级/大方向/关键词快速定位） ============ */
 function openPick(){
   if(!CARDS.length){toast('卡片库还是空的，先新建一张卡片吧');openCardEditor(null);return;}
   PICK_SET={};
-  // 初始化大方向筛选下拉（复用已存在的选项）
+  // 每次打开都重建大方向下拉，确保自定义标签即时生效
   var sel=$('pickDir');
-  if(sel && sel.options.length<=1){
+  if(sel){
+    sel.innerHTML='<option value="">全部大方向</option>';
     DIRS.slice().sort(function(a,b){return a.localeCompare(b,'zh');}).forEach(function(d){
       var o=document.createElement('option');o.value=d;o.textContent=d;sel.appendChild(o);
     });
@@ -679,12 +770,13 @@ function renderPickList(){
   var lvl=($('pickLevel')&&$('pickLevel').value)||'';
   var dir=($('pickDir')&&$('pickDir').value)||'';
   var list=CARDS.filter(function(c){
+    if(c.permanent===false)return false;
     if(lvl&&c.level!==lvl)return false;
     if(dir&&c.direction!==dir)return false;
     if(kw&&((c.action+' '+(c.standard||'')).toLowerCase().indexOf(kw)<0))return false;
     return true;
   });
-  if(!list.length){$('pickList').innerHTML='<div class="empty">没有符合条件的卡片，换个筛选条件试试。</div>';return;}
+  if(!list.length){$('pickList').innerHTML='<div class="empty">没有符合条件的永久卡片，换个筛选条件试试。</div>';return;}
   var h='';
   list.forEach(function(c){
     var checked=PICK_SET[c.id]?' checked':'';
@@ -700,7 +792,7 @@ function confirmPick(){
   if(!rows.length){closeMask('pickModal');toast('没有新选择');return;}
   rows.forEach(function(id){STATE.logs.push({id:newId(),card_id:id,log_date:today(),done:false,done_at:null,mood:'',thought:'',message:'',photo_data:null,created_at:new Date().toISOString()});});
   if(!persist()){return;}
-  closeMask('pickModal');toast('已加入 '+rows.length+' 件到今天');
+  closeMask('pickModal');toast('已加入 '+rows.length+' 件到今天');playFx('flyin');
   loadData();renderAll();
 }
 
@@ -708,11 +800,12 @@ function confirmPick(){
 function renderCards(){
   var kw=($('search').value||'').trim().toLowerCase(),dir=$('filterDir').value,lvl=$('filterLevel').value;
   var list=CARDS.filter(function(c){
+    if(c.permanent===false)return false; // 一次性计划不进卡片库
     if(dir&&c.direction!==dir)return false;if(lvl&&c.level!==lvl)return false;
     if(kw&&((c.action+' '+c.standard).toLowerCase().indexOf(kw)<0))return false;
     return true;
   });
-  if(!list.length){$('cardArea').innerHTML='<div class="empty">没有符合条件的卡片，换个关键词或新建一条吧。</div>';return;}
+  if(!list.length){$('cardArea').innerHTML='<div class="empty">卡片库还是空的。点「＋ 新建卡片」并勾选「永久加入卡片库」即可存进来。</div>';return;}
   var groups={};list.forEach(function(c){(groups[c.direction||'未分类']=groups[c.direction||'未分类']||[]).push(c);});
   var h='';
   DIRS.concat(Object.keys(groups).filter(function(d){return DIRS.indexOf(d)<0;})).forEach(function(d){
@@ -737,7 +830,7 @@ function quickJoin(id){
   if(existing.indexOf(id)>=0){toast('今天已经在计划里啦');switchTab('today');return;}
   STATE.logs.push({id:newId(),card_id:id,log_date:today(),done:false,done_at:null,mood:'',thought:'',message:'',photo_data:null,created_at:new Date().toISOString()});
   if(!persist()){return;}
-  toast('已加入今天');loadData();renderAll();switchTab('today');
+  toast('已加入今天');playFx('flyin');loadData();renderAll();switchTab('today');
 }
 function openCardEditor(id){
   EDIT_CARD_ID=id;var c=id?cardById(id):null;
@@ -745,20 +838,36 @@ function openCardEditor(id){
   $('cf-level').value=c?c.level:(LEVELS[0]||'');
   $('cf-dir').value=c?c.direction:(DIRS[0]||'');
   $('cf-action').value=c?c.action:'';$('cf-standard').value=c?c.standard:'';
+  var perm=c?(c.permanent!==false):true;
+  $('cf-permanent').checked=perm;
+  $('cf-permanent').disabled=!!c; // 已存在的卡片不改动其库属性，避免打卡记录错乱
   $('cardModal').classList.add('on');
 }
 function saveCard(){
   var action=$('cf-action').value.trim();
   if(!action){toast('请填写「待体验」');return;}
-  var payload={level:$('cf-level').value,direction:$('cf-dir').value,action:action,standard:$('cf-standard').value.trim()};
+  var payload={
+    level:$('cf-level').value,direction:$('cf-dir').value,
+    action:action,standard:$('cf-standard').value.trim(),
+    permanent:$('cf-permanent').checked
+  };
   if(EDIT_CARD_ID){
     var c=STATE.cards.find(function(x){return x.id===EDIT_CARD_ID;});
     if(c){c.level=payload.level;c.direction=payload.direction;c.action=payload.action;c.standard=payload.standard;}
   }else{
-    STATE.cards.push({id:newId(),card_no:CARDS.length+1,level:payload.level,direction:payload.direction,action:payload.action,standard:payload.standard,archived:false,created_at:new Date().toISOString()});
+    var id=newId();
+    STATE.cards.push({id:id,card_no:CARDS.length+1,level:payload.level,direction:payload.direction,action:payload.action,standard:payload.standard,permanent:payload.permanent,archived:false,created_at:new Date().toISOString()});
+    // 未勾选永久库 → 直接作为今天的一次性计划
+    if(!payload.permanent){
+      STATE.logs.push({id:newId(),card_id:id,log_date:today(),done:false,done_at:null,mood:'',thought:'',message:'',photo_data:null,created_at:new Date().toISOString()});
+    }
   }
   if(!persist()){return;}
-  closeMask('cardModal');toast('已保存');loadData();renderAll();
+  closeMask('cardModal');
+  if(!EDIT_CARD_ID&&payload.permanent)playFx('sprout');
+  toast(!EDIT_CARD_ID&&!payload.permanent?'已加入今天（单次计划）':'已保存');
+  loadData();renderAll();
+  if(!EDIT_CARD_ID&&!payload.permanent)switchTab('today');
 }
 function deleteCard(id){
   var c=cardById(id);if(!c)return;
@@ -809,6 +918,7 @@ $('lm-photo').addEventListener('change',function(){
 });
 function saveLog(){
   var l=STATE.logs.find(function(x){return x.id===EDIT_LOG_ID;});if(!l)return;
+  var before=currentChapterIndex(),wasDone=!!l.done;
   var sel=$('lm-mood').querySelector('button.on');
   var dateVal=$('lm-date').value||today();
   l.done=$('lm-done').checked;
@@ -819,7 +929,9 @@ function saveLog(){
   l.message=$('lm-message').value.trim();
   if(PHOTO_DATA)l.photo_data=PHOTO_DATA;
   if(!persist()){return;}
-  closeMask('logModal');toast('记录已保存');loadData();renderAll();
+  closeMask('logModal');toast('记录已保存');
+  if(l.done&&!wasDone){playFx('confetti');if(currentChapterIndex()>before)setTimeout(function(){playFx('milestone');},450);}
+  loadData();renderAll();
 }
 function deleteLog(){
   if(!confirm('确定把这条从今天移除吗？'))return;
@@ -876,7 +988,9 @@ function renderPeriods(){
 /* ============ 存档管理 ============ */
 function openData(){
   var size=0;try{size=(localStorage.getItem(STORE_KEY)||'').length;}catch(e){}
-  $('dataStat').innerHTML='卡片 <b>'+STATE.cards.filter(function(c){return !c.archived;}).length+'</b> 张 · 打卡 <b>'+STATE.logs.length+'</b> 条 · 照片 <b>'+STATE.logs.filter(function(l){return l.photo_data;}).length+'</b> 张<br>本机占用约 <b>'+(size/1024).toFixed(1)+' KB</b> · 版本 <b>'+esc(STATE.mode||'local')+'</b>';
+  var live=STATE.cards.filter(function(c){return !c.archived;});
+  var perm=live.filter(function(c){return c.permanent!==false;}).length;
+  $('dataStat').innerHTML='永久卡片 <b>'+perm+'</b> 张 · 单次计划 <b>'+(live.length-perm)+'</b> 张 · 打卡 <b>'+STATE.logs.length+'</b> 条 · 照片 <b>'+STATE.logs.filter(function(l){return l.photo_data;}).length+'</b> 张<br>本机占用约 <b>'+(size/1024).toFixed(1)+' KB</b> · 版本 <b>'+esc(STATE.mode||'local')+'</b>';
   $('dataModal').classList.add('on');
 }
 function exportData(){
@@ -918,26 +1032,84 @@ function renderAll(){renderProgress();renderToday();renderCards();renderStats();
 /* ============ 空白版专属：使用说明 / BGM / 时间旅行动画 ============ */
 function openGuide(){ $('guideModal').classList.add('on'); }
 
-/* --- 时间与旅行元素动画：漂浮的光点轨迹 + 缓慢转动的时钟水印 --- */
-function startAmbient(){
-  if($('journeyScene').childNodes.length)return;
-  var scene=$('journeyScene');
-  for(var i=0;i<14;i++){
-    var s=document.createElement('div');
-    s.className='trail';
-    s.style.left=(Math.random()*100)+'%';
-    s.style.animation='floatUp '+(14+Math.random()*12)+'s linear infinite';
-    s.style.animationDelay=(-Math.random()*20)+'s';
-    scene.appendChild(s);
+/* --- 触发型动画：由具体事件触发，播完即移除，绝非常驻屏幕 --- */
+function playFx(type){
+  var layer=$('fxLayer');if(!layer)return;
+  function drop(el,ms){layer.appendChild(el);setTimeout(function(){if(el.parentNode)el.parentNode.removeChild(el);},ms);}
+  if(type==='confetti'){
+    var colors=['#D98E76','#C19943','#6E9A76','#B26A58','#E0A78F'];
+    for(var i=0;i<16;i++){
+      var p=document.createElement('div');p.className='fx-petal';
+      p.style.left=(Math.random()*96)+'%';p.style.background=colors[i%colors.length];
+      var dur=1.6+Math.random()*1.4;
+      p.style.setProperty('--dur',dur+'s');
+      p.style.setProperty('--dx',(Math.random()*120-60)+'px');
+      p.style.setProperty('--rot',(360+Math.random()*540)+'deg');
+      p.style.animationDelay=(Math.random()*0.4)+'s';
+      layer.appendChild(p);
+      (function(el,d){setTimeout(function(){if(el.parentNode)el.parentNode.removeChild(el);},(d+0.6)*1000);})(p,dur);
+    }
+  }else if(type==='sprout'){
+    var b=document.createElement('div');b.className='fx-bubble';b.textContent='✦ 已存入卡片库';drop(b,1900);
+  }else if(type==='flyin'){
+    var s=document.createElement('div');s.className='fx-slide';s.textContent='✓ 已加入今天';drop(s,2100);
+  }else if(type==='milestone'){
+    var m=document.createElement('div');m.className='fx-banner';m.textContent='✦ '+CHAPTERS[currentChapterIndex()].name;drop(m,2500);
   }
-  var clock=$('sceneClock');
-  clock.style.animation='clockTick 120s linear infinite';
-  // 时钟水印随实际时间显示当前时辰
-  var h=new Date().getHours();
-  clock.textContent=(h<6?'☾':h<12?'☀':h<18?'◐':'☽');
 }
-/* --- BGM：本地音频，IndexedDB 持久化，不上传 --- */
+/* --- 空白版无需常驻氛围动画（覆盖共用空实现，仍保持为空） --- */
+function startAmbient(){}
+
+/* ===== BGM：默认 Web Audio 实时合成的轻缓纯音乐；可换成自己的本地音频（IndexedDB，不上传） ===== */
 var BGM_DB=null, BGM_AUDIO=null, BGM_OBJURL=null;
+var AC=null, MASTER=null, PRESET_ON=false, PRESET_NODES=[], PRESET_LOOP=null, USER_HAS_CUSTOM=false;
+function ensureAC(){
+  if(AC)return AC;
+  var Ctx=window.AudioContext||window.webkitAudioContext;
+  if(!Ctx)return null;
+  AC=new Ctx();
+  MASTER=AC.createGain();MASTER.gain.value=parseFloat(($('bgmVol')&&$('bgmVol').value)||0.5)*0.5;
+  MASTER.connect(AC.destination);
+  return AC;
+}
+// 内置轻缓纯音乐：C 大调五声音阶琶音，正弦+三角波，缓慢起伏，无外部资源
+var SCALE=[261.63,293.66,329.63,392.00,440.00,523.25,587.33,659.25];
+var SEQ=[0,2,4,2,5,4,2,1, 0,3,5,3,6,5,3,2];
+function pluck(freq,at,dur,vol,type){
+  var o=AC.createOscillator(),g=AC.createGain();
+  o.type=type||'sine';o.frequency.value=freq;
+  g.gain.setValueAtTime(0.0001,at);
+  g.gain.exponentialRampToValueAtTime(vol,at+0.04);
+  g.gain.exponentialRampToValueAtTime(0.0001,at+dur);
+  o.connect(g);g.connect(MASTER);o.start(at);o.stop(at+dur+0.05);
+  PRESET_NODES.push(o);
+}
+function playPresetBar(){
+  if(!PRESET_ON||!AC)return;
+  var base=AC.currentTime+0.08,step=0.72;
+  SEQ.forEach(function(n,i){
+    var f=SCALE[n%SCALE.length]/2; // 降八度，更柔和
+    pluck(f,base+i*step,1.5,0.075,'sine');
+    if(i%4===0)pluck(f/2,base+i*step,2.4,0.05,'triangle'); // 低音铺垫
+  });
+}
+function startPresetMusic(){
+  if(!ensureAC())return;
+  if(AC.state==='suspended')AC.resume();
+  if(PRESET_ON)return;
+  PRESET_ON=true;
+  playPresetBar();
+  PRESET_LOOP=setInterval(playPresetBar,SEQ.length*720);
+  if($('bgmNow'))$('bgmNow').textContent='♪ 内置轻缓纯音乐';
+  if($('bgmPlay'))$('bgmPlay').textContent='暂停';
+}
+function stopPresetMusic(){
+  PRESET_ON=false;
+  if(PRESET_LOOP){clearInterval(PRESET_LOOP);PRESET_LOOP=null;}
+  PRESET_NODES.forEach(function(o){try{o.stop();}catch(e){}});PRESET_NODES=[];
+  if(BGM_AUDIO)BGM_AUDIO.pause();
+  if($('bgmPlay'))$('bgmPlay').textContent='播放';
+}
 function bgmDB(){
   if(BGM_DB)return Promise.resolve(BGM_DB);
   return new Promise(function(res,rej){
@@ -966,29 +1138,53 @@ function bgmLoad(){
   }).catch(function(){return null;});
 }
 function applyBgmBlob(blob,name){
+  stopPresetMusic();
   if(BGM_OBJURL)URL.revokeObjectURL(BGM_OBJURL);
   BGM_OBJURL=URL.createObjectURL(blob);
   if(!BGM_AUDIO){BGM_AUDIO=new Audio();BGM_AUDIO.loop=true;}
   BGM_AUDIO.src=BGM_OBJURL;
   BGM_AUDIO.volume=parseFloat(($('bgmVol')&&$('bgmVol').value)||0.5);
-  if($('bgmNow'))$('bgmNow').textContent='♪ '+(name||'旅途背景音乐');
-  if($('bgmPlay'))$('bgmPlay').textContent='播放';
+  USER_HAS_CUSTOM=true;
+  if($('bgmNow'))$('bgmNow').textContent='♪ '+(name||'你的音乐');
 }
 function loadBgm(input){
   var f=input.files&&input.files[0];if(!f)return;
-  bgmSave(f).then(function(){applyBgmBlob(f,f.name);toast('背景音乐已保存到本机');})
-    .catch(function(){toast('音乐保存失败');});
+  bgmSave(f).then(function(){
+    applyBgmBlob(f,f.name);
+    BGM_AUDIO.play().then(function(){if($('bgmPlay'))$('bgmPlay').textContent='暂停';}).catch(function(){});
+    toast('已换成你的音乐');
+  }).catch(function(){toast('音乐保存失败');});
   input.value='';
 }
 function togglePlay(){
-  if(!BGM_AUDIO){toast('请先选择一首本地音乐');return;}
-  if(BGM_AUDIO.paused){BGM_AUDIO.play().then(function(){$('bgmPlay').textContent='暂停';}).catch(function(){toast('播放失败，请重试');});}
-  else{BGM_AUDIO.pause();$('bgmPlay').textContent='播放';}
+  var playing=USER_HAS_CUSTOM?!BGM_AUDIO.paused:PRESET_ON;
+  if(playing){
+    if(USER_HAS_CUSTOM&&BGM_AUDIO)BGM_AUDIO.pause();
+    stopPresetMusic();
+  }else{
+    if(USER_HAS_CUSTOM&&BGM_AUDIO){
+      BGM_AUDIO.play().then(function(){if($('bgmPlay'))$('bgmPlay').textContent='暂停';}).catch(function(){toast('播放失败，请重试');});
+    }else startPresetMusic();
+  }
 }
-function setBgmVol(v){if(BGM_AUDIO)BGM_AUDIO.volume=parseFloat(v);}
+function setBgmVol(v){
+  v=parseFloat(v);
+  if(BGM_AUDIO)BGM_AUDIO.volume=v;
+  if(MASTER)MASTER.gain.value=v*0.5;
+  try{localStorage.setItem('journey_bgm_vol',String(v));}catch(e){}
+}
 function toggleBgmPanel(){$('bgmPanel').classList.toggle('on');}
-// 启动后恢复上次选择的音乐
-bgmLoad().then(function(b){if(b)applyBgmBlob(b,'上次选择的音乐');});
+// 启动：恢复音量 → 若有自定义音乐则恢复它，否则播放内置轻音乐（受浏览器自动播放策略限制，首次点击后生效）
+try{var sv=localStorage.getItem('journey_bgm_vol');if(sv!==null&&$('bgmVol'))$('bgmVol').value=sv;}catch(e){}
+bgmLoad().then(function(b){if(b)applyBgmBlob(b,'你的音乐');});
+function autoStartBgm(){
+  if(USER_HAS_CUSTOM&&BGM_AUDIO){BGM_AUDIO.play().catch(function(){});}
+  else startPresetMusic();
+  document.removeEventListener('click',autoStartBgm);
+  document.removeEventListener('touchstart',autoStartBgm);
+}
+document.addEventListener('click',autoStartBgm);
+document.addEventListener('touchstart',autoStartBgm);
 
 /* =========================================================
  * 云端迁移预留接口（当前不启用，保留以便将来改造）：
