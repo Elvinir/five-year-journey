@@ -982,6 +982,16 @@ if('serviceWorker' in navigator && (location.protocol==='https:'||location.proto
   window.addEventListener('load',function(){
     navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'}).then(function(reg){
       reg.update().catch(function(){});
+      // 新版本激活后自动重载一次（session 标记防止循环刷新）
+      navigator.serviceWorker.addEventListener('message',function(ev){
+        if(ev && ev.data && ev.data.type==='RELOAD_NEW_VERSION'){
+          try{
+            if(sessionStorage.getItem('__fyj_reloaded__')==='1')return;
+            sessionStorage.setItem('__fyj_reloaded__','1');
+          }catch(e){}
+          location.reload();
+        }
+      });
     }).catch(function(){});
   });
 }
